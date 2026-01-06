@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { generateShortId } from "../utils/base62";
 import { Url } from "../models/url.model";
+import { ClickEvent } from "../models/events.model";
 
 export const postUrl = async (
   req: Request,
@@ -18,8 +19,12 @@ export const postUrl = async (
     //check if not URL not already exists
     const existingUrl = await Url.findOne({ fullUrl });
     if (existingUrl) {
+      const shortUrl = `${req.protocol}://${req.get("host")}/${
+        existingUrl.shortID
+      }`;
+
       return res.json({
-        shortCode: existingUrl.shortID,
+        shortUrl,
         fullUrl: existingUrl.fullUrl,
       });
     }
@@ -53,7 +58,13 @@ export const getUrl = async (
       return res.status(404).json({ msg: "Short URL not found" });
     }
 
-    getUrlFromDB.clicks += 1;
+    // LOG EVENT (append-only)
+    await ClickEvent.create({
+      shortID: shortURL,
+      userAgent: req.headers["user-agent"],
+      ipHash: req.ip, // later need to hash it
+      referrer: req.headers.referer,
+    });
     await getUrlFromDB.save();
 
     res.redirect(302, getUrlFromDB.fullUrl);
