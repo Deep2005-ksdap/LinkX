@@ -5,6 +5,7 @@ import express, { Request, Response, NextFunction } from "express";
 import { connectDb } from "./config/db";
 import { urlRouter } from "./routes/url.route";
 import { errorHandler } from "./middleware/error.middleware";
+import { analyticRouter } from "./routes/analytics.route";
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 // });
 
 app.use(urlRouter);
+app.use(analyticRouter);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
