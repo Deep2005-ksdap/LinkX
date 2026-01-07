@@ -1,0 +1,98 @@
+import type { Request, Response, NextFunction } from "express";
+import { body, validationResult } from "express-validator";
+import { User, UserDocument } from "../models/user.model";
+import {
+  assingJWT,
+  comparePassword,
+  hashedPass,
+} from "../utils/passwordAndJWT";
+
+export const registerUser = [
+  // Validation chain middlewares
+  body("fullname")
+    .exists()
+    .withMessage("Fullname is required")
+    .isObject()
+    .withMessage("Fullname must be an object"),
+  body("fullname.firstname")
+    .isLength({ min: 3 })
+    .withMessage("Firstname must be at least 3 chars long"),
+  body("email").isEmail().withMessage("Please enter a valid email"),
+  body("password")
+    .isLength({ min: 5 })
+    .withMessage("Password must be at least 5 chars long")
+    .matches(/\d/)
+    .withMessage("Password must contain a number"),
+
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const { fullname, email, password }: Partial<UserDocument> = req.body;
+
+      //if already exist user
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(409).json({
+          message: "User already exists",
+        });
+      }
+
+      //type narrowing of password
+      if (typeof password !== "string") {
+        throw new Error("Password is required");
+      }
+      const hash = await hashedPass(password);
+      await User.create({ fullname, email, password: hash });
+      return res.status(200).json({
+        message: "user Created Successfuly",
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+];
+
+export const loginUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user || !password) {
+      return res.status(400).json({
+        message: "Invalid credentials",
+      });
+    }
+
+    const isMatch = await comparePassword(password, user.password);
+
+    if (!isMatch) {
+      return res.status(400).json({
+        message: "Invalid credentials",
+      });
+    }
+
+    const token = assingJWT(user._id.toString());  // id need to be in string
+
+    return res.status(200).json({
+      message: "Login successful",
+      token,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const logout = async (req: Request, res: Response) => {
+  return res.status(200).json({
+    message: "Logout successful",
+  });
+};

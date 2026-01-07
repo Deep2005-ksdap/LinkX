@@ -16,7 +16,7 @@ export const postUrl = async (
       return res.status(400).json({ msg: "Invalid URL format" });
     }
 
-    //check if not URL not already exists
+    //check if URL not already exists
     const existingUrl = await Url.findOne({ fullUrl });
     if (existingUrl) {
       const shortUrl = `${req.protocol}://${req.get("host")}/${
@@ -29,8 +29,15 @@ export const postUrl = async (
       });
     }
 
-    const shortID = generateShortId();
-    const urlDoc = await Url.create({
+    //uniqueness of shortID
+    let shortID;
+    let existingShortID;
+    do {
+      shortID = generateShortId();
+      existingShortID = await Url.findOne({ shortID });
+    } while (existingShortID);
+
+    await Url.create({
       fullUrl,
       shortID,
     });

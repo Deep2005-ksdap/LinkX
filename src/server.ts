@@ -1,11 +1,12 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import express, { Request, Response, NextFunction } from "express";
+import express from "express";
 import { connectDb } from "./config/db";
 import { urlRouter } from "./routes/url.route";
 import { errorHandler } from "./middleware/error.middleware";
 import { analyticRouter } from "./routes/analytics.route";
+import { authRouter } from "./routes/auth.route";
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 // });
 
 app.use(urlRouter);
+app.use(authRouter);
 app.use(analyticRouter);
 app.use(errorHandler);
 
