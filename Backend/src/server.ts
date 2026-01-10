@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import express from "express";
+import cors from "cors";
 import { connectDb } from "./config/db";
 import { urlRouter } from "./routes/url.route";
 import { errorHandler } from "./middleware/error.middleware";
@@ -10,6 +11,13 @@ import { authRouter } from "./routes/auth.route";
 
 const app = express();
 
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Vite default
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

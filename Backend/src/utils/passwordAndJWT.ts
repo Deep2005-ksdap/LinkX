@@ -2,6 +2,10 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { secretKey } from "../config/jwt.config";
 
+if (!secretKey) {
+  throw new Error("JWT_SECRET is not defined");
+}
+
 export const hashedPass = async (password: string): Promise<string> => {
   try {
     const salt = await bcrypt.genSalt(10);
