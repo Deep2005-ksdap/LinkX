@@ -1,40 +1,40 @@
 // import { useEffect } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterationPage from "./pages/RegisterationPage";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
+import NotFound from "./pages/NotFound";
+import { useEffect, useState } from "react";
+
+type Theme = "light" | "dark";
 
 function App() {
-  // const apiCall = async () => {
-  //   const res = await fetch("http://localhost:3000/shortURL", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({
-  //       fullUrl: "https://google.com",
-  //     }),
-  //   });
+  const [theme, setTheme] = useState<Theme>(() => {
+    return (localStorage.getItem("theme") as Theme) ?? "light";
+  });
 
-  //   const data = await res.json();
-  //   console.log(data);
-  // };
-  // useEffect(() => {
-  //   apiCall();
-  // }, []);
+  useEffect(() => {
+    const root = document.documentElement;
 
+    if (theme === "dark") {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+
+    localStorage.setItem("theme", theme);
+  }, [theme]);
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<LoginPage/>} />
-        <Route path="/register" element={<RegisterationPage/>} />
-        <Route path="/dashboard" element={<Dashboard/>} />
-        <Route path="/profile" element={<Profile/>} />
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      <Route path="/" element={<LandingPage  theme={theme} setTheme={setTheme} />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterationPage />} />
+      <Route path="/dashboard" element={<Dashboard  theme={theme} setTheme={setTheme}/>} />
+      <Route path="/profile" element={<Profile />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 }
 

@@ -1,47 +1,127 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { BiSolidDashboard } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
-import { IoIosLogOut } from "react-icons/io";
+import { IoClose, IoMenu, IoLogOut, IoSunnyOutline } from "react-icons/io5";
+import { useAuthContext } from "../context/AuthContext";
+import { FaMoon } from "react-icons/fa";
 
-export default function Sidebar() {
-  const [activeTab, setActiveTab] = useState<1 | 2>(1);
+export default function Sidebar({ theme, setTheme }) {
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isAccountOpen, setIsAccountOpen] = useState(false);
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+  };
+
+  const { user, logout } = useAuthContext();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    setIsMobileOpen(false);
+    navigate("/");
+  };
+
   return (
-    <aside className="w-64 min-h-screen border-r bg-white dark:bg-gray-900 dark:border-gray-800 hidden md:block">
-      <div className="p-6">
-        <h2 className="text-xl font-semibold">LinkX</h2>
+    <>
+      {/* Mobile Top Bar */}
+      <div className="md:hidden flex items-center justify-between px-4 py-3 border-b dark:border-gray-800">
+        <h1 className="text-lg font-semibold dark:text-white">LinkX</h1>
+        <button
+          className="dark:text-gray-200"
+          onClick={() => setIsMobileOpen(true)}
+        >
+          <IoMenu size={24} />
+        </button>
       </div>
 
-      <nav className="px-4 space-y-1 text-sm text-gray-600 dark:text-gray-400">
-        <Link
-          onClick={() => setActiveTab(1)}
-          to={"/dashboard"}
-          className={`block px-3 py-2 rounded-lg ${
-            activeTab === 1 && "bg-gray-100"
-          } dark:bg-gray-800 text-gray-900 ${
-            activeTab === 1 && "dark:text-white"
-          }`}
-        >
-          <BiSolidDashboard />
-          Dashboard
-        </Link>
-        <Link
-          onClick={() => setActiveTab(2)}
-          to={"/profile"}
-          className={`block px-3 py-2 rounded-lg ${
-            activeTab === 2 && "bg-gray-100"
-          } hover:bg-gray-100 dark:hover:bg-gray-800 ${
-            activeTab === 2 && "dark:text-white"
-          }`}
-        >
-          <CgProfile />
-          Profile
-        </Link>
-        <a className="block px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
-          <IoIosLogOut />
-          Logout
-        </a>
-      </nav>
-    </aside>
+      {/* Overlay (mobile) */}
+      {isMobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 z-30 md:hidden"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`
+          fixed md:static top-0 left-0 z-40
+          h-screen w-64
+          bg-white dark:bg-gray-900
+          border-r dark:border-gray-800
+          transform transition-transform duration-300
+          ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
+          md:translate-x-0
+        `}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b dark:text-gray-10000">
+          <h2 className="text-xl font-semibold dark:text-white">LinkX</h2>
+          <button className="md:hidden" onClick={() => setIsMobileOpen(false)}>
+            <IoClose className="dark:text-white" size={22} />
+          </button>
+        </div>
+
+        {/* Navigation */}
+        <nav className="px-4 py-4 space-y-1">
+          <NavLink
+            to="/dashboard"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2 rounded-lg text-sm
+               ${
+                 isActive
+                   ? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
+                   : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+               }`
+            }
+          >
+            <BiSolidDashboard size={18} />
+            Dashboard Analytics
+          </NavLink>
+        </nav>
+
+        {/* Bottom Section */}
+        <div className="absolute bottom-0 w-full px-4 pb-4">
+          {/* Account Button */}
+          <button
+            onClick={() => setIsAccountOpen(!isAccountOpen)}
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg
+                       text-sm text-gray-600 dark:text-gray-400
+                       hover:bg-gray-100 dark:hover:bg-gray-800"
+          >
+            <CgProfile size={18} />
+            Account
+          </button>
+
+          {/* Account Popup */}
+          {isAccountOpen && (
+            <div className="mt-2 rounded-lg border border-gray-400 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 p-3 text-sm">
+              <p className="font-medium text-gray-900 dark:text-white">
+                {user?.name}
+              </p>
+              <p className="text-gray-500 dark:text-gray-400 text-xs">
+                {user?.email}
+              </p>
+              <div className="flex px-2 mt-4 justify-between">
+                <button
+                  onClick={toggleTheme}
+                  className="px-3 py-2 text-sm rounded-lg border dark:text-white dark:border-gray-700"
+                >
+                  {theme === "light" ? <FaMoon /> : <IoSunnyOutline />}
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="mt-3 flex font-bold items-center gap-1 text-red-500 hover:text-red-600"
+                >
+                  <IoLogOut />
+                  Logout
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </aside>
+    </>
   );
 }

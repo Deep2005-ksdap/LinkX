@@ -3,6 +3,7 @@ dotenv.config();
 
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import { connectDb } from "./config/db";
 import { urlRouter } from "./routes/url.route";
 import { errorHandler } from "./middleware/error.middleware";
@@ -24,6 +25,8 @@ app.use(express.urlencoded({ extended: true }));
 // app.get("/", (req: Request, res: Response) => {
 //   res.send("hi! it is ur url encoder");
 // });
+
+app.use(cookieParser());
 
 app.use(urlRouter);
 app.use(authRouter);

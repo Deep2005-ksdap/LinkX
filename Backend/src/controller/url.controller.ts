@@ -10,6 +10,7 @@ export const postUrl = async (
 ) => {
   try {
     const { fullUrl } = req.body;
+    const userId = req.user?.userId;
     try {
       new URL(fullUrl); // validates URL
     } catch {
@@ -40,6 +41,7 @@ export const postUrl = async (
     await Url.create({
       fullUrl,
       shortID,
+      owner: userId,
     });
     const shortUrl = `${req.protocol}://${req.get("host")}/${shortID}`;
 
@@ -75,6 +77,23 @@ export const getUrl = async (
     await getUrlFromDB.save();
 
     res.redirect(302, getUrlFromDB.fullUrl);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAllUrls = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = req.user?.userId;
+    const allLinks = await Url.find({ owner: userId });
+
+    return res.status(200).json({
+      allLinks,
+    });
   } catch (error) {
     next(error);
   }

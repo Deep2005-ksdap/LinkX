@@ -36,6 +36,8 @@ export const assingJWT = (userId: string) => {
   });
 };
 
-export const verifyJWT = (token:string) => {
-  return jwt.verify(token, secretKey)
-}
+export const verifyJWT = (token: string) => {
+  return jwt.verify(token, secretKey) as {
+    userId: string;
+  };
+};

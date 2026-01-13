@@ -1,26 +1,43 @@
-// import axios from "axios";
-import { Link } from "react-router-dom";
-export interface LoginResponse {
-  email: string;
-  password: string;
-}
+import { Link, useNavigate } from "react-router-dom";
+import { useAuthContext } from "../context/AuthContext";
+import { useState } from "react";
+import { FaEyeSlash, FaRegEye } from "react-icons/fa";
 
 export default function Login() {
-  // async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
-  //   e.preventDefault();
-  //   const res = await axios.post<LoginResponse>(
-  //     "http://localhost:3000/auth/login",
-  //     {
-  //       email,
-  //       password,
-  //     }
-  //   );
-  //   console.log(res.data.message);
-  //   console.log(res.data.token);
-  // }
+  const { login, isAuthenticated } = useAuthContext();
+  const navigate = useNavigate();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [showPass, setShowPass] = useState<boolean>(false);
+
+  // Redirect if already logged in
+  if (isAuthenticated) {
+    navigate("/dashboard", { replace: true });
+    return null;
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    const res = await login(email, password);
+
+    setLoading(false);
+
+    if (res.success) {
+      navigate("/dashboard", { replace: true });
+    } else {
+      setError(res.message);
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
-      <div className="w-full max-w-md bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-xl p-6">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-white dark:from-gray-900 dark:to-gray-800 px-4">
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-sm">
         <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
           Welcome back
         </h2>
@@ -28,40 +45,70 @@ export default function Login() {
           Log in to your LinkX account
         </p>
 
-        <form className="mt-6 space-y-4">
+        {error && (
+          <p className="mt-4 text-sm text-red-500 bg-red-50 dark:bg-red-900/20 px-3 py-2 rounded-lg">
+            {error}
+          </p>
+        )}
+
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
-            <label className="text-sm text-gray-600 dark:text-gray-300">
+            <label className="text-sm font-medium text-gray-600 dark:text-gray-300">
               Email
             </label>
             <input
               type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="mt-1 w-full px-4 py-2 rounded-lg border bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-600"
+              className="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                         bg-transparent text-gray-900 dark:text-white
+                         focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
           <div>
-            <label className="text-sm text-gray-600 dark:text-gray-300">
-              Password
-            </label>
+            <div className="flex justify-between">
+              <label className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                Password
+              </label>
+              <span
+                onClick={() => setShowPass((prev) => !prev)}
+                className="text-2xl dark:text-gray-100"
+              >
+                {showPass ? <FaEyeSlash /> : <FaRegEye />}
+              </span>
+            </div>
             <input
-              type="password"
+              type={`${showPass ? "text" : "password"}`}
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="mt-1 w-full px-4 py-2 rounded-lg border bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-600"
+              className="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                         bg-transparent text-gray-900 dark:text-white
+                         focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
           <button
-            type="button"
-            className="w-full mt-2 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700"
+            type="submit"
+            disabled={loading}
+            className="w-full mt-2 py-2 rounded-lg bg-indigo-600 text-white font-medium
+                       hover:bg-indigo-700 transition
+                       disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Log In
+            {loading ? "Logging in..." : "Log In"}
           </button>
         </form>
 
         <p className="mt-6 text-sm text-center text-gray-600 dark:text-gray-400">
           Don’t have an account?{" "}
-          <Link to="/register" className="text-indigo-600 hover:underline">
+          <Link
+            to="/register"
+            className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline"
+          >
             Sign up
           </Link>
         </p>

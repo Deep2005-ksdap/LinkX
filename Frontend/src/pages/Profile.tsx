@@ -1,12 +1,31 @@
+import { IoClose } from "react-icons/io5";
 import Sidebar from "../components/Sidebar";
+import { GiHamburgerMenu } from "react-icons/gi";
+import { useState } from "react";
 
 export default function Profile() {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Sidebar />
+      <Sidebar isOpen={isOpen} />
 
       <main className="flex-1 p-6 max-w-3xl">
-        <h1 className="text-2xl font-semibold">Profile</h1>
+        <div className="flex justify-between items-center">
+          {isOpen ? (
+            <IoClose
+              onClick={() => setIsOpen((prev) => !prev)}
+              className="dark:text-white text-2xl sm:hidden"
+            />
+          ) : (
+            <GiHamburgerMenu
+              onClick={() => setIsOpen((prev) => !prev)}
+              className="dark:text-white text-2xl sm:hidden"
+            />
+          )}
+          <h1 className="text-2xl text-center dark:text-gray-100 font-semibold ">
+            Profile
+          </h1>
+        </div>
 
         <div className="mt-6 p-6 border rounded-xl bg-white dark:bg-gray-800 dark:border-gray-700 space-y-4">
           <div>

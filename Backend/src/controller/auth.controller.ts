@@ -80,11 +80,18 @@ export const loginUser = async (
       });
     }
 
-    const token = assingJWT(user._id.toString());  // id need to be in string
+    const token = assingJWT(user._id.toString()); // id need to be in string
+
+    res.cookie("token", token, {
+      httpOnly: true, //prevent from xss attack
+      secure: true, // only on HTTPS
+      sameSite: "none", // needed for cross-site cookies
+      maxAge: 1000 * 60 * 60 * 24, // 1 day
+    });
 
     return res.status(200).json({
       message: "Login successful",
-      token,
+      user,
     });
   } catch (error) {
     next(error);
@@ -92,7 +99,22 @@ export const loginUser = async (
 };
 
 export const logout = async (req: Request, res: Response) => {
+  res.clearCookie("token");
   return res.status(200).json({
     message: "Logout successful",
   });
+};
+
+export const getMe = async (req: Request, res:Response) => {
+  try {
+    const user = await User.findById(req.user?.userId).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ user });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
 };

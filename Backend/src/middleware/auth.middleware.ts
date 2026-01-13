@@ -6,14 +6,16 @@ export const authenticateMe = async (
   res: Response,
   next: NextFunction
 ) => {
-  const token = req.headers.authorization?.split(" ")[1];
+  const token = req.cookies?.token || req.headers.authorization?.split(" ")[1];
   if (!token) {
-    return res.status(401).json({ message: "Unauthorized" });
+    return res.status(401).json({
+      message: "Unauthorized",
+    });
   }
 
   try {
     const decode = verifyJWT(token);
-    (req as any).user = decode; // <- this can be optimised further
+    req.user = decode;
     next();
   } catch (error) {
     next(error);

@@ -1,7 +1,7 @@
 
 const Features = () => {
   return (
-    <section className="bg-gray-50 dark:bg-gray-900">
+    <section className="bg-white dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 py-16">
         <h2 className="text-2xl md:text-3xl font-semibold text-center">
           Everything you need in a link shortener

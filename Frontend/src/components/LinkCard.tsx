@@ -10,13 +10,13 @@ export default function LinkCard({
   clicks,
 }: LinkCardProps) {
   return (
-    <div className="border rounded-xl p-4 bg-white dark:bg-gray-800 dark:border-gray-700">
-      <p className="text-sm text-gray-500 truncate">
+    <div className="border rounded-xl p-4 bg-white dark:bg-gray-800 dark:border-gray-500">
+      <p className="text-sm text-gray-500 truncate dark:text-gray-400">
         {originalUrl}
       </p>
 
       <div className="mt-2 flex items-center justify-between">
-        <a className="text-indigo-600 font-medium">
+        <a className="text-indigo-600 font-medium dark:text-blue-600">
           {shortUrl}
         </a>
         <span className="text-sm text-gray-600 dark:text-gray-400">
@@ -25,10 +25,10 @@ export default function LinkCard({
       </div>
 
       <div className="mt-3 flex gap-3 text-sm">
-        <button className="px-3 py-1 rounded-lg border">
+        <button className="px-3 py-1 rounded-lg border bg-gray-600 text-white dark:text-gray-200">
           Copy
         </button>
-        <button className="px-3 py-1 rounded-lg border">
+        <button className="px-3 py-1 rounded-lg border text-red-500 dark:text-red-400">
           Delete
         </button>
       </div>

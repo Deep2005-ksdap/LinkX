@@ -1,9 +1,9 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Types } from "mongoose";
 
 export interface IUrl extends Document {
   fullUrl: string;
   shortID: string;
-  clicks: number;
+  owner?: Types.ObjectId | null;
   createdAt: Date;
 }
 
@@ -19,6 +19,12 @@ const urlSchema = new Schema<IUrl>(
       required: true,
       unique: true,
       index: true,
+    },
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: false,
+      default: null
     },
   },
   {
