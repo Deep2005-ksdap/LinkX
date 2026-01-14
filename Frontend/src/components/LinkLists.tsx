@@ -4,11 +4,11 @@ import LinkCard from "./LinkCard";
 
 const LinkLists = () => {
   const BASE_SHORT_URL = "http://localhost:3000";
-  const { urls, loading, getMyUrls } = useUrlContext();
+  const { urls, loading, getMyUrls, refreshFlag } = useUrlContext();
 
-  useEffect(() => {
+  useEffect(() => { 
     getMyUrls();
-  }, []);
+  }, [refreshFlag]);
 
   return (
     <div className="mt-8 space-y-4">

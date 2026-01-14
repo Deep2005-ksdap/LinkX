@@ -11,6 +11,8 @@ interface UrlProviderProps {
 
 export function UrlProvider({ children }: UrlProviderProps) {
   const [urls, setUrls] = useState<ShortUrl[]>([]);
+  const [refreshFlag, setRefreshFlag] = useState<boolean>(false);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -71,11 +73,32 @@ export function UrlProvider({ children }: UrlProviderProps) {
     }
   };
 
+  const deleteUrl = async (shortID: string): Promise<void> => {
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await axios.delete<String>(
+        `http://localhost:3000/${shortID}`,
+        {
+          withCredentials: true,
+        }
+      );
+      setRefreshFlag((prev) => !prev);
+    } catch (error: any) {
+      setError(error.response?.data?.message || "Failed to Delete");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const value: UrlContextType = {
     loading,
     error,
     urls,
+    refreshFlag,
+    setRefreshFlag,
     getMyUrls,
+    deleteUrl,
     createShortUrl,
     getAnalytics,
   };

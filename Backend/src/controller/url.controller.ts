@@ -59,9 +59,9 @@ export const getUrl = async (
   next: NextFunction
 ) => {
   try {
-    const shortURL = req.params.shortURL;
+    const { shortID } = req.params;
 
-    const getUrlFromDB = await Url.findOne({ shortID: shortURL });
+    const getUrlFromDB = await Url.findOne({ shortID: shortID });
     // console.log({ getUrlFromDB });
     if (!getUrlFromDB) {
       return res.status(404).json({ msg: "Short URL not found" });
@@ -69,7 +69,7 @@ export const getUrl = async (
 
     // LOG EVENT (append-only)
     await ClickEvent.create({
-      shortID: shortURL,
+      shortID: shortID,
       userAgent: req.headers["user-agent"],
       ipHash: req.ip, // later need to hash it
       referrer: req.headers.referer,
@@ -93,6 +93,41 @@ export const getAllUrls = async (
 
     return res.status(200).json({
       allLinks,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteUrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { shortID } = req.params;
+    const userId = req.user?.userId;
+
+    const url = await Url.findOne({ shortID });
+    if (!url) {
+      return res.status(404).json({ success: false, message: "URL not found" });
+    }
+    if (!url.owner) {
+      return res
+        .status(403)
+        .json({ success: false, message: "URL has no owner" });
+    }
+    if (url.owner.toString() !== userId) {
+      return res
+        .status(403)
+        .json({ success: false, message: "Not authorized" });
+    }
+
+    await Url.deleteOne({ _id: url._id });
+
+    return res.status(200).json({
+      success: true,
+      message: "delete successfully",
     });
   } catch (error) {
     next(error);
