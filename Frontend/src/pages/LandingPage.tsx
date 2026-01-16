@@ -4,19 +4,31 @@ import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { useUrlContext } from "../context/UrlContext";
 
-export default function LandingPage({theme, setTheme}) {
+export default function LandingPage({ theme, setTheme }) {
+  const [link, setLink] = useState<string>("");
   const [url, setUrl] = useState<string>("");
+  const [show, setShow] = useState<boolean>(false);
+  const [copied, setCopied] = useState<boolean>(false);
   const { createShortUrl, loading } = useUrlContext();
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied((prev) => !prev);
+    setTimeout(() => {
+      setCopied(false);
+    }, 8000);
+  };
 
   const handleCreate = async () => {
     const res = await createShortUrl(url as string);
-    console.log(res);
-    setUrl("")
+    setLink(res?.shortUrl as string);
+    setShow(true);
+    setUrl("");
   };
   return (
     <div className="min-h-screen flex flex-col   text-gray-900">
       {/* Navbar */}
-      <Navbar theme={theme} setTheme={setTheme}/>
+      <Navbar theme={theme} setTheme={setTheme} />
 
       {/* Hero */}
       <main className="flex-1 dark:text-white bg-white dark:bg-gray-900">
@@ -49,9 +61,25 @@ export default function LandingPage({theme, setTheme}) {
                 )}
               </button>
             </div>
+            {show && (
+              <div className="flex flex-col items-center">
+                <input
+                  disabled
+                  type="text"
+                  value={link}
+                  className="flex-1 text-center mt-3 px-4 py-3 w-full rounded-lg border focus:outline-none"
+                />
+                <button
+                  onClick={() => copyToClipboard(link)}
+                  className="px-10 py-3 rounded-lg bg-gray-900 text-white dark:border-gray-400 dark:border-2"
+                >
+                  {copied ? "Copied ✔️" : "Copy to clipboard"}
+                </button>
+              </div>
+            )}
           </div>
         </section>
-                
+
         {/* Features */}
         <Features />
       </main>

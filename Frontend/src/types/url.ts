@@ -3,8 +3,10 @@ import type { Dispatch, SetStateAction } from "react";
 export interface ShortUrl {
   id?: string;
   shortID: string;
+  shortUrl?: string;
   owner?: string;
   fullUrl: string;
+  isAlreadyExist: boolean;
   updatedAt?: Date;
   createdAt?: Date;
 }

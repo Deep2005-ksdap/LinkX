@@ -7,12 +7,18 @@ import { useState } from "react";
 
 export default function Dashboard({ theme, setTheme }) {
   const [url, setUrl] = useState<string>("");
+  const [linkExist, setLinkExist] = useState<boolean>(false);
   const { isAuthenticated } = useAuthContext();
   const { createShortUrl, setRefreshFlag } = useUrlContext();
 
   const handleCreate = async () => {
     const res = await createShortUrl(url as string);
-    console.log(res);
+    if (res?.isAlreadyExist) {
+      setLinkExist((prev) => !prev);
+      setTimeout(() => {
+        setLinkExist((prev) => !prev);
+      }, 6000);
+    }
     setRefreshFlag(true);
     setUrl("");
   };
@@ -42,6 +48,11 @@ export default function Dashboard({ theme, setTheme }) {
               Shorten
             </button>
           </div>
+          {linkExist && (
+            <p className="text-center rounded-xl font-bold mt-2 py-2 text-white bg-red-800/80">
+              Link is Already Exist
+            </p>
+          )}
         </div>
 
         {/* Links list */}

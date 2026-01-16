@@ -24,10 +24,18 @@ export const postUrl = async (
         existingUrl.shortID
       }`;
 
-      return res.json({
-        shortUrl,
-        fullUrl: existingUrl.fullUrl,
-      });
+      if (!req.user) {
+        return res.json({
+          shortUrl,
+          fullUrl: existingUrl.fullUrl,
+        });
+      } else if (req.user.userId === existingUrl.owner?.toString()) {
+        return res.json({
+          isAlreadyExist: true,
+          shortUrl,
+          fullUrl: existingUrl.fullUrl,
+        });
+      }
     }
 
     //uniqueness of shortID
