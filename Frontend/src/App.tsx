@@ -4,9 +4,11 @@ import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterationPage from "./pages/RegisterationPage";
 import Dashboard from "./pages/Dashboard";
-import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import { useEffect, useState } from "react";
+import LinkAnalytics from "./pages/LinkAnalytics";
+import AnalyticsPage from "./pages/AnalyticsPage";
+import Layout from "./pages/Layout";
 
 type Theme = "light" | "dark";
 
@@ -28,11 +30,20 @@ function App() {
   }, [theme]);
   return (
     <Routes>
-      <Route path="/" element={<LandingPage  theme={theme} setTheme={setTheme} />} />
+      <Route
+        path="/"
+        element={<LandingPage theme={theme} setTheme={setTheme} />}
+      />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterationPage />} />
-      <Route path="/dashboard" element={<Dashboard  theme={theme} setTheme={setTheme}/>} />
-      <Route path="/profile" element={<Profile />} />
+      <Route
+        path="/dashboard"
+        element={<Layout theme={theme} setTheme={setTheme} />}
+      >
+        <Route index element={<Dashboard />} />
+        <Route path="analytics/:shortID" element={<LinkAnalytics />} />
+        <Route path="analytics" element={<AnalyticsPage />} />
+      </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

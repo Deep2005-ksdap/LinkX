@@ -80,7 +80,7 @@ export const getUrl = async (
       shortID: shortID,
       userAgent: req.headers["user-agent"],
       ipHash: req.ip, // later need to hash it
-      referrer: req.headers.referer,
+      referrer: req.headers.referer || "direct",
     });
     await getUrlFromDB.save();
 

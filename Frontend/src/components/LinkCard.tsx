@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useUrlContext } from "../context/UrlContext";
+import { Link, useNavigate } from "react-router-dom";
 
 type LinkCardProps = {
   originalUrl: string;
@@ -14,6 +15,7 @@ export default function LinkCard({
 }: LinkCardProps) {
   const [copied, setCopied] = useState<boolean>(false);
   const [deleteRemind, setDeleteRemind] = useState<boolean>(false);
+  const navigate = useNavigate();
   const { deleteUrl } = useUrlContext();
 
   const copyToClipboard = (text: string) => {
@@ -75,23 +77,31 @@ export default function LinkCard({
         </span>
       </div>
 
-      <div className="mt-3 flex gap-3 text-sm">
-        <button
-          onClick={() => {
-            console.log(shortUrl);
-            copyToClipboard(shortUrl);
-            setCopied(true);
-          }}
-          className="px-3 py-1 rounded-lg border bg-gray-600 text-white dark:text-gray-200"
+      <div className="flex items-center justify-between">
+        <div className="mt-3 flex gap-3 text-sm">
+          <button
+            onClick={() => {
+              console.log(shortUrl);
+              copyToClipboard(shortUrl);
+              setCopied(true);
+            }}
+            className="px-3 py-1 rounded-lg border bg-gray-600 text-white dark:text-gray-200"
+          >
+            {copied ? "Copied ✔️" : "Copy"}
+          </button>
+          <button
+            onClick={() => setDeleteRemind((prev) => !prev)}
+            className="px-3 py-1 rounded-lg border text-red-500 dark:text-red-400"
+          >
+            Delete
+          </button>
+        </div>
+        <Link
+          to={`/dashboard/analytics/${getShortID(shortUrl)}`}
+          className="dark:text-gray-200 border dark:border-gray-600 mt-1 rounded-2xl px-2 py-2"
         >
-          {copied ? "Copied ✔️" : "Copy"}
-        </button>
-        <button
-          onClick={() => setDeleteRemind((prev) => !prev)}
-          className="px-3 py-1 rounded-lg border text-red-500 dark:text-red-400"
-        >
-          Delete
-        </button>
+          view Analytics
+        </Link>
       </div>
     </div>
   );

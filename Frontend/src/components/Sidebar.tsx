@@ -77,7 +77,21 @@ export default function Sidebar({ theme, setTheme }) {
             }
           >
             <BiSolidDashboard size={18} />
-            Dashboard Analytics
+            Dashboard
+          </NavLink>
+          <NavLink
+            to="/dashboard/analytics"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2 rounded-lg text-sm
+               ${
+                 isActive
+                   ? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
+                   : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+               }`
+            }
+          >
+            <BiSolidDashboard size={18} />
+            Analytics
           </NavLink>
         </nav>
 
