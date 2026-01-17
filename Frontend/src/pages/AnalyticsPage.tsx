@@ -42,7 +42,7 @@ const topLinks = [
 
 export default function OverallAnalytics() {
   return (
-    <div className="p-6 h-screen w-full overflow-y-auto space-y-8">
+    <div className="p-6 h-screen w-full overflow-y-auto space-y-8 dark:text-white">
       {/* Heading */}
       <h1 className="text-2xl font-semibold">Overall Analytics</h1>
 
@@ -57,8 +57,8 @@ export default function OverallAnalytics() {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Clicks Over Time */}
-        <div className="bg-white rounded-xl shadow p-4">
-          <h2 className="font-medium mb-3">Clicks Over Time</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-4">
+          <h2 className="font-medium mb-3 dark:text-white">Clicks Over Time</h2>
           <ResponsiveContainer width="100%" height={250}>
             <LineChart data={clicksOverTime}>
               <XAxis dataKey="date" />
@@ -70,8 +70,8 @@ export default function OverallAnalytics() {
         </div>
 
         {/* Referrer Breakdown */}
-        <div className="bg-white rounded-xl shadow p-4">
-          <h2 className="font-medium mb-3">Traffic Sources</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-4">
+          <h2 className="font-medium mb-3 dark:text-white">Traffic Sources</h2>
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie data={referrerData} dataKey="value" nameKey="name">
@@ -86,10 +86,12 @@ export default function OverallAnalytics() {
       </div>
 
       {/* Top Links Table */}
-      <div className="bg-white rounded-xl shadow p-4">
-        <h2 className="font-medium mb-3">Top Performing Links</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-4">
+        <h2 className="font-medium mb-3 dark:text-white">
+          Top Performing Links
+        </h2>
         <table className="w-full text-left">
-          <thead className="text-gray-500 text-sm">
+          <thead className="text-gray-500 dark:text-gray-400 text-sm">
             <tr>
               <th className="py-2">Short ID</th>
               <th>Total Clicks</th>
@@ -98,10 +100,12 @@ export default function OverallAnalytics() {
           </thead>
           <tbody>
             {topLinks.map((link) => (
-              <tr key={link.shortID} className="border-t">
-                <td className="py-2 font-mono">{link.shortID}</td>
-                <td>{link.clicks}</td>
-                <td>{link.lastClick}</td>
+              <tr key={link.shortID} className="border-t dark:border-gray-700">
+                <td className="py-2 font-mono dark:text-white">
+                  {link.shortID}
+                </td>
+                <td className="dark:text-white">{link.clicks}</td>
+                <td className="dark:text-white">{link.lastClick}</td>
               </tr>
             ))}
           </tbody>
@@ -113,9 +117,9 @@ export default function OverallAnalytics() {
 
 function StatCard({ title, value }: { title: string; value: number }) {
   return (
-    <div className="bg-white rounded-xl shadow p-4">
-      <p className="text-gray-500 text-sm">{title}</p>
-      <p className="text-2xl font-semibold">{value}</p>
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-4">
+      <p className="text-gray-500 dark:text-gray-400 text-sm">{title}</p>
+      <p className="text-2xl font-semibold dark:text-white">{value}</p>
     </div>
   );
 }

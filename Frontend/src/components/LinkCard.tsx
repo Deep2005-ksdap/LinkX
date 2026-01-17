@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useUrlContext } from "../context/UrlContext";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { MdAnalytics, MdOutlineAnalytics } from "react-icons/md";
 
 type LinkCardProps = {
   originalUrl: string;
@@ -15,7 +16,6 @@ export default function LinkCard({
 }: LinkCardProps) {
   const [copied, setCopied] = useState<boolean>(false);
   const [deleteRemind, setDeleteRemind] = useState<boolean>(false);
-  const navigate = useNavigate();
   const { deleteUrl } = useUrlContext();
 
   const copyToClipboard = (text: string) => {
@@ -77,13 +77,15 @@ export default function LinkCard({
         </span>
       </div>
 
-      <div className="flex items-center justify-between">
+      <div className="flex  justify-between">
         <div className="mt-3 flex gap-3 text-sm">
           <button
             onClick={() => {
-              console.log(shortUrl);
               copyToClipboard(shortUrl);
               setCopied(true);
+              setTimeout(() => {
+                setCopied(false);
+              },8000)
             }}
             className="px-3 py-1 rounded-lg border bg-gray-600 text-white dark:text-gray-200"
           >
@@ -98,8 +100,9 @@ export default function LinkCard({
         </div>
         <Link
           to={`/dashboard/analytics/${getShortID(shortUrl)}`}
-          className="dark:text-gray-200 border dark:border-gray-600 mt-1 rounded-2xl px-2 py-2"
+          className="dark:text-gray-200 border flex gap-2 items-center dark:border-gray-600 mt-1 rounded-2xl px-2 py-2"
         >
+          <MdAnalytics size={20}/>
           view Analytics
         </Link>
       </div>

@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { BiSolidDashboard } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
 import { IoClose, IoMenu, IoLogOut, IoSunnyOutline } from "react-icons/io5";
 import { useAuthContext } from "../context/AuthContext";
 import { FaMoon } from "react-icons/fa";
+import { MdAnalytics, MdOutlineAnalytics } from "react-icons/md";
 
 export default function Sidebar({ theme, setTheme }) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -15,6 +16,7 @@ export default function Sidebar({ theme, setTheme }) {
 
   const { user, logout } = useAuthContext();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     logout();
@@ -67,30 +69,38 @@ export default function Sidebar({ theme, setTheme }) {
         <nav className="px-4 py-4 space-y-1">
           <NavLink
             to="/dashboard"
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2 rounded-lg text-sm
+            className={() => {
+              const isActive = location.pathname.endsWith("/dashboard");
+              return `flex items-center gap-3 px-3 py-2 rounded-lg text-sm
                ${
                  isActive
                    ? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
-               }`
-            }
+               }`;
+            }}
           >
             <BiSolidDashboard size={18} />
             Dashboard
           </NavLink>
           <NavLink
             to="/dashboard/analytics"
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2 rounded-lg text-sm
+            className={() => {
+              const isActive = location.pathname.startsWith(
+                "/dashboard/analytics",
+              );
+              return `flex items-center gap-3 px-3 py-2 rounded-lg text-sm
                ${
                  isActive
                    ? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
-               }`
-            }
+               }`;
+            }}
           >
-            <BiSolidDashboard size={18} />
+            {theme === "dark" ? (
+              <MdAnalytics size={20} />
+            ) : (
+              <MdOutlineAnalytics size={20} />
+            )}
             Analytics
           </NavLink>
         </nav>
