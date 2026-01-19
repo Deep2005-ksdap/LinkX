@@ -11,7 +11,7 @@ export default function Sidebar({ theme, setTheme }) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const toggleTheme = () => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+    setTheme((prev: "dark" | "light") => (prev === "light" ? "dark" : "light"));
   };
 
   const { user, logout } = useAuthContext();

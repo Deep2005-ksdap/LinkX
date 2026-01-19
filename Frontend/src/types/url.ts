@@ -11,14 +11,6 @@ export interface ShortUrl {
   createdAt?: Date;
 }
 
-export interface AnalyticsData {
-  totalClicks: number;
-  clicksByDate?: {
-    date: string;
-    count: number;
-  }[];
-}
-
 export interface UrlContextType {
   urls: ShortUrl[];
   loading: boolean;
@@ -29,5 +21,4 @@ export interface UrlContextType {
   deleteUrl: (shortID: string) => Promise<void>;
   createShortUrl: (fullUrl: string) => Promise<ShortUrl | null>;
   getMyUrls: () => Promise<void>;
-  getAnalytics: (shortID: string) => Promise<AnalyticsData | null>;
 }

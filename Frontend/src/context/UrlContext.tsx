@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import axios from "axios";
-import type { UrlContextType, ShortUrl, AnalyticsData } from "../types/url";
+import type { UrlContextType, ShortUrl } from "../types/url";
 import type { ReactNode } from "react";
 
 const UrlContext = createContext<UrlContextType | undefined>(undefined);
@@ -30,27 +30,6 @@ export function UrlProvider({ children }: UrlProviderProps) {
       return res.data; // { shortId, shortUrl, fullUrl }
     } catch (err: any) {
       setError(err.response?.data?.message || "Failed to create short URL");
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getAnalytics = async (
-    shortID: string
-  ): Promise<AnalyticsData | null> => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const res = await axios.get(
-        `http://localhost:3000/analytics/${shortID}`,
-        { withCredentials: true }
-      );
-
-      return res.data; // { totalClicks, clicksByDate }
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to load analytics");
       return null;
     } finally {
       setLoading(false);
@@ -100,7 +79,6 @@ export function UrlProvider({ children }: UrlProviderProps) {
     getMyUrls,
     deleteUrl,
     createShortUrl,
-    getAnalytics,
   };
 
   return <UrlContext.Provider value={value}>{children}</UrlContext.Provider>;
