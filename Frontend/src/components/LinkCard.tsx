@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useUrlContext } from "../context/UrlContext";
 import { Link } from "react-router-dom";
-import { MdAnalytics, MdOutlineAnalytics } from "react-icons/md";
+import { MdAnalytics } from "react-icons/md";
 
 type LinkCardProps = {
   originalUrl: string;

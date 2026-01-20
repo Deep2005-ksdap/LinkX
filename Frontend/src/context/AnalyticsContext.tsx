@@ -1,5 +1,9 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
-import type { AnalyticsContextType, AnalyticsData } from "../types/analytics";
+import type {
+  AnalyticsContextType,
+  AnalyticsData,
+  OverallAnalyticsData,
+} from "../types/analytics";
 import axios from "axios";
 
 const AnalyticsContext = createContext<AnalyticsContextType | undefined>(
@@ -10,7 +14,7 @@ interface AnalyticsProviderProps {
   children: ReactNode;
 }
 
-export function AnalyticsContextProvider({ children }: AnalyticsProviderProps) {
+export function AnalyticsProvider({ children }: AnalyticsProviderProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,10 +39,33 @@ export function AnalyticsContextProvider({ children }: AnalyticsProviderProps) {
     }
   };
 
+  const getOverallAnalytics =
+    async (): Promise<OverallAnalyticsData | null> => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const res = await axios.get(
+          `http://localhost:3000/analytics/over-all`,
+          { withCredentials: true },
+        );
+
+        return res.data;
+      } catch (err: any) {
+        setError(
+          err.response?.data?.message || "Failed to load overall analytics",
+        );
+        return null;
+      } finally {
+        setLoading(false);
+      }
+    };
+
   const value: AnalyticsContextType = {
     loading,
     error,
     getPerLinkAnalytics,
+    getOverallAnalytics,
   };
 
   return (

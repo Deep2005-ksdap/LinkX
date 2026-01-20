@@ -1,11 +1,65 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { useAnalyticsContext } from "../context/AnalyticsContext";
+import type { AnalyticsData } from "../types/analytics";
 
 const LinkAnalytics: React.FC = () => {
-  // dummy data (replace later with API data)
-  const shortUrl = "linkx.io/abc123";
-  const originalUrl = "https://example.com/very-long-url";
+  const { shortID } = useParams();
+  const { getPerLinkAnalytics, loading, error } = useAnalyticsContext();
+
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(
+    null,
+  );
+
+  useEffect(() => {
+    if (!shortID) return;
+    const fetchAnalytics = async () => {
+      const data = await getPerLinkAnalytics(shortID);
+      if (data) {
+        setAnalyticsData(data);
+      }
+    };
+    fetchAnalytics();
+  }, [shortID]);
+
+  if (loading) {
+    return (
+      <div className="p-6 h-screen w-full flex flex-col gap-4 items-center justify-center">
+        <div className="h-6 w-6 animate-spin rounded-full dark:border-b-white border-2 border-t-transparent" />
+        <div className="text-lg dark:text-white">Loading analytics...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 h-screen w-full flex items-center justify-center">
+        <div className="text-red-500">Error: {error}</div>
+      </div>
+    );
+  }
+
+  if (!analyticsData) {
+    return (
+      <div className="p-6 h-screen w-full flex items-center justify-center">
+        <div className="text-gray-500">No data available</div>
+      </div>
+    );
+  }
+
+  const {
+    totalClicks,
+    uniqueVisitors,
+    lastClickedAt,
+    clicksByDate,
+    referrerClicks,
+    shortUrl,
+    originalUrl,
+    createdAt,
+  } = analyticsData;
+  const avgPerDay =
+    clicksByDate.length > 0 ? Math.round(totalClicks / clicksByDate.length) : 0;
 
   return (
     <div className="p-6 overflow-y-auto h-screen w-full space-y-6 dark:text-white">
@@ -25,7 +79,10 @@ const LinkAnalytics: React.FC = () => {
         <div className="mt-2 space-y-1">
           <p>
             <span className="font-medium dark:text-white">Short URL:</span>{" "}
-            <a href="#" className="text-blue-600 dark:text-blue-400 underline">
+            <a
+              href={shortUrl}
+              className="text-blue-600 dark:text-blue-400 underline"
+            >
               {shortUrl}
             </a>
           </p>
@@ -34,43 +91,63 @@ const LinkAnalytics: React.FC = () => {
             {originalUrl}
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Created: 12 Jan 2026
+            Created: {new Date(createdAt).toLocaleDateString()}
           </p>
         </div>
       </div>
 
       {/* ================= Metrics ================= */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <MetricCard title="Total Clicks" value="1245" />
-        <MetricCard title="Unique Visitors" value="812" />
-        <MetricCard title="Last Click" value="2 hrs ago" />
-        <MetricCard title="Avg / Day" value="56" />
+        <MetricCard title="Total Clicks" value={totalClicks.toString()} />
+        <MetricCard title="Unique Visitors" value={uniqueVisitors.toString()} />
+        <MetricCard
+          title="Last Click"
+          value={
+            lastClickedAt ? new Date(lastClickedAt).toLocaleString() : "Never"
+          }
+        />
+        <MetricCard title="Avg / Day" value={avgPerDay.toString()} />
       </div>
 
       {/* ================= Charts Section ================= */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <ChartBox title="Clicks Over Time">
-          <div className="h-48 flex items-center justify-center text-gray-400 dark:text-gray-500">
-            Line Chart Placeholder
+          <div className="h-48 overflow-y-auto">
+            {clicksByDate.length > 0 ? (
+              <ul className="space-y-1">
+                {clicksByDate.map((item, index) => (
+                  <li key={index} className="flex justify-between text-sm">
+                    <span>{item.date}</span>
+                    <span>{item.clicks} clicks</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="flex items-center justify-center h-full text-gray-400 dark:text-gray-500">
+                No click data available
+              </div>
+            )}
           </div>
         </ChartBox>
 
         <ChartBox title="Referrer Breakdown">
-          <div className="h-48 flex items-center justify-center text-gray-400 dark:text-gray-500">
-            Pie / Donut Chart Placeholder
+          <div className="h-48 overflow-y-auto">
+            {referrerClicks.length > 0 ? (
+              <ul className="space-y-1">
+                {referrerClicks.map((item, index) => (
+                  <li key={index} className="flex justify-between text-sm">
+                    <span>{item.referrer}</span>
+                    <span>{item.clicks} clicks</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="flex items-center justify-center h-full text-gray-400 dark:text-gray-500">
+                No referrer data available
+              </div>
+            )}
           </div>
         </ChartBox>
-      </div>
-
-      {/* ================= Device / Browser ================= */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow">
-        <h3 className="font-semibold mb-3 dark:text-white">
-          Devices & Browsers
-        </h3>
-
-        <div className="h-40 flex items-center justify-center text-gray-400 dark:text-gray-500">
-          Bar Chart Placeholder
-        </div>
       </div>
 
       {/* ================= Recent Clicks ================= */}

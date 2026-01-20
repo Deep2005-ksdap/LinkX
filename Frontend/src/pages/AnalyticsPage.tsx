@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   LineChart,
   Line,
@@ -9,38 +10,77 @@ import {
   Pie,
   Cell,
 } from "recharts";
+import { useAnalyticsContext } from "../context/AnalyticsContext";
+import type { OverallAnalyticsData } from "../types/analytics";
 
 const COLORS = ["#2563eb", "#16a34a", "#f59e0b", "#ef4444"];
 
-const summary = {
-  totalLinks: 12,
-  totalClicks: 1420,
-  todayClicks: 54,
-  uniqueIPs: 380,
-};
-
-const clicksOverTime = [
-  { date: "Jan 10", clicks: 120 },
-  { date: "Jan 11", clicks: 210 },
-  { date: "Jan 12", clicks: 180 },
-  { date: "Jan 13", clicks: 260 },
-  { date: "Jan 14", clicks: 300 },
-];
-
-const referrerData = [
-  { name: "Google", value: 500 },
-  { name: "Direct", value: 400 },
-  { name: "Twitter", value: 300 },
-  { name: "Others", value: 220 },
-];
-
-const topLinks = [
-  { shortID: "abc123", clicks: 320, lastClick: "2 mins ago" },
-  { shortID: "xyz789", clicks: 210, lastClick: "10 mins ago" },
-  { shortID: "qwe456", clicks: 180, lastClick: "1 hr ago" },
-];
-
 export default function OverallAnalytics() {
+  const { getOverallAnalytics, loading, error } = useAnalyticsContext();
+  const [data, setData] = useState<OverallAnalyticsData | null>(null);
+
+  const fetchData = async () => {
+    const result = await getOverallAnalytics();
+    if (result) {
+      setData(result);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+    // Poll every 30 seconds for real-time updates
+    const interval = setInterval(fetchData, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (loading && !data) {
+    return (
+      <div className="p-6 h-screen w-full flex flex-col gap-4 items-center justify-center">
+        <div className="h-6 w-6 animate-spin rounded-full dark:border-b-white border-2 border-t-transparent" />
+        <div className="text-xl dark:text-white">Loading analytics...</div>
+      </div>
+    );
+  }
+
+  if (error && !data) {
+    return (
+      <div className="p-6 h-screen w-full flex items-center justify-center">
+        <div className="text-xl text-red-500">Error: {error}</div>
+      </div>
+    );
+  }
+
+  const summary = data
+    ? {
+        totalLinks: data.totalLinks,
+        totalClicks: data.kpis.totalClicks,
+        todayClicks: data.kpis.todayClicks,
+        uniqueIPs: data.kpis.uniqueIPs,
+      }
+    : {
+        totalLinks: 0,
+        totalClicks: 0,
+        todayClicks: 0,
+        uniqueIPs: 0,
+      };
+
+  const clicksOverTime = data ? data.clickOverTime : [];
+  const referrerData = data
+    ? data.trafficSources.map((item) => ({
+        name: item.source,
+        value: item.clicks,
+      }))
+    : [];
+  const topLinks = data
+    ? data.topLinks.map((link) => ({
+        shortID: link.shortID,
+        clicks: link.clicks,
+        lastClick: link.lastClick
+          ? new Date(link.lastClick).toLocaleString()
+          : "Never",
+      }))
+    : [];
+
   return (
     <div className="p-6 h-screen w-full overflow-y-auto space-y-8 dark:text-white">
       {/* Heading */}
@@ -93,7 +133,7 @@ export default function OverallAnalytics() {
         <table className="w-full text-left">
           <thead className="text-gray-500 dark:text-gray-400 text-sm">
             <tr>
-              <th className="py-2">Short ID</th>
+              <th className="py-2">Short URL</th>
               <th>Total Clicks</th>
               <th>Last Click</th>
             </tr>
@@ -102,7 +142,7 @@ export default function OverallAnalytics() {
             {topLinks.map((link) => (
               <tr key={link.shortID} className="border-t dark:border-gray-700">
                 <td className="py-2 font-mono dark:text-white">
-                  {link.shortID}
+                  http://localhost:3000/{link.shortID}
                 </td>
                 <td className="dark:text-white">{link.clicks}</td>
                 <td className="dark:text-white">{link.lastClick}</td>

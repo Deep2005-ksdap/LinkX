@@ -29,6 +29,21 @@ export const getPerLinkAnalytics = async (
       });
     }
 
+    // Get URL details
+    const urlDoc = await Url.findOne({ shortID });
+    if (!urlDoc) {
+      return res.status(404).json({
+        message: "URL not found",
+      });
+    }
+
+    // Check if user owns the URL (if authenticated)
+    if (req.user && urlDoc.owner?.toString() !== req.user.userId) {
+      return res.status(403).json({
+        message: "Not authorized to view this analytics",
+      });
+    }
+
     // Combined aggregation using $facet for efficiency
     const analyticsAgg = await ClickEvent.aggregate([
       { $match: { shortID } },
@@ -40,6 +55,16 @@ export const getPerLinkAnalytics = async (
                 _id: "$shortID",
                 totalClicks: { $sum: 1 },
               },
+            },
+          ],
+          uniqueVisitors: [
+            {
+              $group: {
+                _id: "$ipHash",
+              },
+            },
+            {
+              $count: "count",
             },
           ],
           clicksByDate: [
@@ -56,7 +81,7 @@ export const getPerLinkAnalytics = async (
             },
             { $sort: { _id: 1 } },
           ],
-          referrorClicks: [
+          referrerClicks: [
             {
               $group: {
                 _id: "$referrer",
@@ -76,11 +101,12 @@ export const getPerLinkAnalytics = async (
 
     const result = analyticsAgg[0];
     const totalClicks = result.totalClicks[0]?.totalClicks || 0;
+    const uniqueVisitors = result.uniqueVisitors[0]?.count || 0;
     const clicksByDate = result.clicksByDate.map((item: ClickByDate) => ({
       date: item._id,
       clicks: item.clicks,
     }));
-    const referrorClicks = result.referrorClicks.map((item: TrafficSource) => ({
+    const referrerClicks = result.referrerClicks.map((item: TrafficSource) => ({
       referrer: item._id || "unknown",
       clicks: item.clicks,
     }));
@@ -88,9 +114,13 @@ export const getPerLinkAnalytics = async (
 
     return res.status(200).json({
       totalClicks,
+      uniqueVisitors,
       clicksByDate,
       lastClickedAt,
-      referrorClicks,
+      referrerClicks,
+      shortUrl: `${req.protocol}://${req.get("host")}/${shortID}`,
+      originalUrl: urlDoc.fullUrl,
+      createdAt: urlDoc.createdAt,
     });
   } catch (error) {
     next(error);

@@ -8,6 +8,8 @@ A modern, full-stack URL shortening service built with React, Node.js, Express, 
 - **User Authentication**: Secure registration and login with JWT tokens
 - **Dashboard**: Manage your shortened URLs with an intuitive interface
 - **Analytics**: Track click counts, view detailed analytics with charts for clicks over time, referrer data, and individual link performance
+- **Real-time Analytics**: Dashboard updates automatically every 30 seconds with latest click data
+- **Overall Analytics**: View comprehensive analytics across all your links including total clicks, unique visitors, and top performing links
 - **URL Management**: Edit and delete your shortened URLs
 - **Responsive Design**: Works seamlessly on desktop and mobile devices
 - **Dark/Light Theme**: Toggle between themes for better user experience
@@ -99,8 +101,9 @@ A modern, full-stack URL shortening service built with React, Node.js, Express, 
 1. **Visit the landing page** at `http://localhost:5173`
 2. **Register** a new account or **login** if you already have one
 3. **Shorten URLs** using the dashboard
-4. **View analytics** for your shortened links, including charts for click trends and referrer data
-5. **Manage your URLs** - edit or delete as needed
+4. **View analytics** for your shortened links, including real-time charts for click trends, referrer data, and overall performance
+5. **Monitor real-time updates** - analytics data refreshes automatically every 30 seconds
+6. **Manage your URLs** - edit or delete as needed
 
 ## 🔌 API Endpoints
 
@@ -120,7 +123,8 @@ A modern, full-stack URL shortening service built with React, Node.js, Express, 
 
 ### Analytics
 
-- `GET /analytics/:shortID` - Get click analytics for a URL
+- `GET /analytics/over-all` - Get overall analytics for all user URLs (requires authentication)
+- `GET /analytics/:shortID` - Get click analytics for a specific URL (requires authentication)
 
 ## 🏗 Project Structure
 
