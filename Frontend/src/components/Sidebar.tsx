@@ -7,7 +7,14 @@ import { useAuthContext } from "../context/AuthContext";
 import { FaMoon } from "react-icons/fa";
 import { MdAnalytics, MdOutlineAnalytics } from "react-icons/md";
 
-export default function Sidebar({ theme, setTheme }) {
+type Theme = "light" | "dark";
+
+interface SidebarProps {
+  theme: Theme;
+  setTheme: React.Dispatch<React.SetStateAction<Theme>>;
+}
+
+export default function Sidebar({ theme, setTheme }: SidebarProps) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const toggleTheme = () => {

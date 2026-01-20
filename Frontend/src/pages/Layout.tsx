@@ -3,7 +3,14 @@ import Sidebar from "../components/Sidebar";
 import { useAuthContext } from "../context/AuthContext";
 import { Outlet } from "react-router-dom";
 
-const Layout = ({ theme, setTheme }) => {
+type Theme = "light" | "dark";
+
+interface LayoutProps {
+  theme: Theme;
+  setTheme: React.Dispatch<React.SetStateAction<Theme>>;
+}
+
+const Layout = ({ theme, setTheme }: LayoutProps) => {
   const { isAuthenticated } = useAuthContext();
 
   return isAuthenticated ? (

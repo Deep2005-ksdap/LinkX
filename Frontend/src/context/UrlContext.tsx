@@ -24,7 +24,7 @@ export function UrlProvider({ children }: UrlProviderProps) {
       const res = await axios.post(
         "http://localhost:3000/shortURL",
         { fullUrl },
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       return res.data; // { shortId, shortUrl, fullUrl }
@@ -40,10 +40,13 @@ export function UrlProvider({ children }: UrlProviderProps) {
     try {
       setLoading(true);
       setError(null);
-      const res = await axios.get<ShortUrl[]>("http://localhost:3000/my-url", {
-        withCredentials: true,
-      });
-      const { allLinks } = res.data as { allLinks: ShortUrl[] };
+      const res = await axios.get<{ allLinks: ShortUrl[] }>(
+        "http://localhost:3000/my-url",
+        {
+          withCredentials: true,
+        },
+      );
+      const { allLinks } = res.data;
       setUrls(allLinks);
     } catch (error: any) {
       setError(error.response?.data?.message || "Failed to fetch URLs");
@@ -56,12 +59,9 @@ export function UrlProvider({ children }: UrlProviderProps) {
     try {
       setLoading(true);
       setError(null);
-      const res = await axios.delete<String>(
-        `http://localhost:3000/${shortID}`,
-        {
-          withCredentials: true,
-        }
-      );
+      await axios.delete(`http://localhost:3000/${shortID}`, {
+        withCredentials: true,
+      });
       setRefreshFlag((prev) => !prev);
     } catch (error: any) {
       setError(error.response?.data?.message || "Failed to Delete");

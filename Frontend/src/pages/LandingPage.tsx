@@ -4,7 +4,14 @@ import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { useUrlContext } from "../context/UrlContext";
 
-export default function LandingPage({ theme, setTheme }) {
+type Theme = "light" | "dark";
+
+interface LandingPageProps {
+  theme: Theme;
+  setTheme: React.Dispatch<React.SetStateAction<Theme>>;
+}
+
+export default function LandingPage({ theme, setTheme }: LandingPageProps) {
   const [link, setLink] = useState<string>("");
   const [url, setUrl] = useState<string>("");
   const [show, setShow] = useState<boolean>(false);

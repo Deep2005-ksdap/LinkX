@@ -31,6 +31,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (res.status === 200) {
         setUser(res.data.user);
         return { success: true, message: res.data.message };
+      } else {
+        return {
+          success: false,
+          message: "Login failed",
+        };
       }
     } catch (error: any) {
       return {

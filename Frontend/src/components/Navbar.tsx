@@ -2,9 +2,16 @@ import { IoSunnyOutline } from "react-icons/io5";
 import { FaMoon } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-export default function Navbar({theme, setTheme}) {
-   const toggleTheme = () => {
-    setTheme(prev => (prev === "light" ? "dark" : "light"));
+type Theme = "light" | "dark";
+
+interface NavbarProps {
+  theme: Theme;
+  setTheme: React.Dispatch<React.SetStateAction<Theme>>;
+}
+
+export default function Navbar({ theme, setTheme }: NavbarProps) {
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
 
   return (
@@ -26,7 +33,10 @@ export default function Navbar({theme, setTheme}) {
             {theme === "light" ? <FaMoon /> : <IoSunnyOutline />}
           </button>
 
-          <Link to={"/dashboard"} className="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">
+          <Link
+            to={"/dashboard"}
+            className="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700"
+          >
             Get Started
           </Link>
         </div>
