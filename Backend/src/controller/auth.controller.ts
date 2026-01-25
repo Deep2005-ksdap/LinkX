@@ -9,11 +9,7 @@ import {
 
 export const registerUser = [
   // Validation chain middlewares
-  body("fullname")
-    .exists()
-    .withMessage("Fullname is required")
-    .isObject()
-    .withMessage("Fullname must be an object"),
+  body("fullname").exists().withMessage("Fullname is required"),
   body("fullname.firstname")
     .isLength({ min: 3 })
     .withMessage("Firstname must be at least 3 chars long"),
@@ -28,7 +24,9 @@ export const registerUser = [
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+        return res
+          .status(400)
+          .json({ success: false, message: errors.array() });
       }
 
       const { fullname, email, password }: Partial<UserDocument> = req.body;
@@ -36,9 +34,9 @@ export const registerUser = [
       //if already exist user
       const existingUser = await User.findOne({ email });
       if (existingUser) {
-        return res.status(409).json({
-          message: "User already exists",
-        });
+        return res
+          .status(409)
+          .json({ success: false, message: "User already exists" });
       }
 
       //type narrowing of password
@@ -47,9 +45,9 @@ export const registerUser = [
       }
       const hash = await hashedPass(password);
       await User.create({ fullname, email, password: hash });
-      return res.status(200).json({
-        message: "user Created Successfuly",
-      });
+      return res
+        .status(200)
+        .json({ success: true, message: "user Created Successfuly" });
     } catch (error) {
       next(error);
     }
@@ -59,7 +57,7 @@ export const registerUser = [
 export const loginUser = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { email, password } = req.body;
@@ -68,6 +66,7 @@ export const loginUser = async (
 
     if (!user || !password) {
       return res.status(400).json({
+        success: false,
         message: "Invalid credentials",
       });
     }
@@ -76,6 +75,7 @@ export const loginUser = async (
 
     if (!isMatch) {
       return res.status(400).json({
+        success: false,
         message: "Invalid credentials",
       });
     }
@@ -90,6 +90,7 @@ export const loginUser = async (
     });
 
     return res.status(200).json({
+      success: true,
       message: "Login successful",
       user,
     });
@@ -105,7 +106,7 @@ export const logout = async (req: Request, res: Response) => {
   });
 };
 
-export const getMe = async (req: Request, res:Response) => {
+export const getMe = async (req: Request, res: Response) => {
   try {
     const user = await User.findById(req.user?.userId).select("-password");
 

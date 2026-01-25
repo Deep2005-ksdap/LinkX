@@ -20,16 +20,20 @@ export function UrlProvider({ children }: UrlProviderProps) {
     try {
       setLoading(true);
       setError(null);
-
       const res = await axios.post(
         "http://localhost:3000/shortURL",
         { fullUrl },
         { withCredentials: true },
       );
 
-      return res.data; // { shortId, shortUrl, fullUrl }
+      const data = res.data;
+      if (!data.success) {
+        setError(data.msg);
+        return null;
+      }
+      return data;
     } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to create short URL");
+      setError(err.response?.data?.msg || "Failed to create short URL");
       return null;
     } finally {
       setLoading(false);
@@ -72,8 +76,9 @@ export function UrlProvider({ children }: UrlProviderProps) {
 
   const value: UrlContextType = {
     loading,
-    error,
     urls,
+    error,
+    setError,
     refreshFlag,
     setRefreshFlag,
     getMyUrls,

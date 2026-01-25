@@ -5,15 +5,23 @@ import { useState } from "react";
 export default function Dashboard() {
   const [url, setUrl] = useState<string>("");
   const [linkExist, setLinkExist] = useState<boolean>(false);
-  const { createShortUrl, setRefreshFlag } = useUrlContext();
+  const { createShortUrl, setRefreshFlag, loading, error, setError } =
+    useUrlContext();
 
   const handleCreate = async () => {
-    const res = await createShortUrl(url as string);
-    if (res?.isAlreadyExist) {
+    const data = await createShortUrl(url as string);
+    console.log({ data });
+    if (data?.isAlreadyExist) {
       setLinkExist((prev) => !prev);
       setTimeout(() => {
         setLinkExist((prev) => !prev);
       }, 6000);
+    }
+    // Clear error after 5 seconds if it exists
+    if (error) {
+      setTimeout(() => {
+        setError(null);
+      }, 5000);
     }
     setRefreshFlag(true);
     setUrl("");
@@ -36,16 +44,23 @@ export default function Dashboard() {
               placeholder="Paste your long URL here"
               className="flex-1 px-4 py-2 rounded-lg dark:text-white border bg-transparent focus:outline-none focus:ring-2 focus:placeholder-gray-900 dark:focus:ring-gray-400 dark:placeholder-gray-400"
             />
+            {linkExist && (
+              <p className="text-center rounded-xl font-bold mt-2 py-2 text-white bg-red-800/80">
+                Link is Already Exist
+              </p>
+            )}
+
             <button
+              disabled={url === ""}
               onClick={handleCreate}
-              className="px-5 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700"
+              className={`px-5 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 disabled:text-white/50 disabled:bg-blue-600/50 disabled:cursor-not-allowed ${loading ? "cursor-progress" : "cursor-pointer"}`}
             >
               Shorten
             </button>
           </div>
-          {linkExist && (
-            <p className="text-center rounded-xl font-bold mt-2 py-2 text-white bg-red-800/80">
-              Link is Already Exist
+          {error && (
+            <p className="text-center rounded-xl font-bold mt-2 py-2 text-red-500 bg-red-400/40">
+              {error}
             </p>
           )}
         </div>

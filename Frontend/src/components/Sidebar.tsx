@@ -129,7 +129,7 @@ export default function Sidebar({ theme, setTheme }: SidebarProps) {
           {isAccountOpen && (
             <div className="mt-2 rounded-lg border border-gray-400 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 p-3 text-sm">
               <p className="font-medium text-gray-900 dark:text-white">
-                {user?.name}
+                {user?.fullname.firstname}
               </p>
               <p className="text-gray-500 dark:text-gray-400 text-xs">
                 {user?.email}

@@ -1,12 +1,13 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-} from "react";
-import type { AuthContextType, User } from "../types/auth";
-import type { ReactNode } from "react"; 
+import { createContext, useContext, useState, useEffect } from "react";
+import type {
+  AuthContextType,
+  registerationDataTypes,
+  User,
+  validatingErrorType,
+} from "../types/auth";
+import type { ReactNode } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -15,43 +16,79 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
+  const navigate = useNavigate();
+
+  const [error, setError] = useState<
+    string | Partial<validatingErrorType>[] | null
+  >(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   const login = async (email: string, password: string) => {
     try {
+      setLoading(true);
+      setError(null);
       const res = await axios.post(
         "http://localhost:3000/auth/login",
         { email, password },
         {
           withCredentials: true,
-        }
+        },
       );
 
-      if (res.status === 200) {
-        setUser(res.data.user);
-        return { success: true, message: res.data.message };
+      if (res.data.success === false) {
+        setLoading(false);
+        setError(res.data.message);
       } else {
-        return {
-          success: false,
-          message: "Login failed",
-        };
+        setLoading(false);
+        setUser(res.data.user);
+        navigate("/dashboard", { replace: true });
       }
     } catch (error: any) {
-      return {
-        success: false,
-        message: error.response?.data?.message || "Login failed",
-      };
+      setLoading(false);
+      setError(error.response?.data?.message || "Login failed");
+    }
+  };
+  const register = async ({
+    fullname,
+    email,
+    password,
+  }: registerationDataTypes) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const res = await axios.post("http://localhost:3000/auth/register", {
+        fullname,
+        email,
+        password,
+      });
+      console.log(res.data);
+      if (res.data.success === false) {
+        setLoading(false);
+        setError(res.data.message);
+      } else {
+        setLoading(false);
+        // Auto-login after registration
+        await login(email, password);
+      }
+    } catch (error: any) {
+      setLoading(false);
+      setError(error.response?.data?.message || "Registration failed");
     }
   };
 
   const logout = async () => {
-    await axios.post(
-      "http://localhost:3000/auth/logout",
-      {},
-      { withCredentials: true }
-    );
-    setUser(null);
+    try {
+      await axios.post(
+        "http://localhost:3000/auth/logout",
+        {},
+        { withCredentials: true },
+      );
+      setUser(null);
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   useEffect(() => {
@@ -74,7 +111,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const value: AuthContextType = {
     user,
+    error,
     loading,
+    setError,
+    register,
     isAuthenticated: !!user,
     login,
     logout,

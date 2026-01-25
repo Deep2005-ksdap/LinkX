@@ -4,13 +4,11 @@ import { useState } from "react";
 import { FaEyeSlash, FaRegEye } from "react-icons/fa";
 
 export default function Login() {
-  const { login, isAuthenticated } = useAuthContext();
+  const { login, isAuthenticated, loading, error } = useAuthContext();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [showPass, setShowPass] = useState<boolean>(false);
 
   // Redirect if already logged in
@@ -21,18 +19,8 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    setLoading(true);
 
-    const res = await login(email, password);
-
-    setLoading(false);
-
-    if (res.success) {
-      navigate("/dashboard", { replace: true });
-    } else {
-      setError(res.message);
-    }
+    await login(email, password);
   };
 
   return (
@@ -46,9 +34,17 @@ export default function Login() {
         </p>
 
         {error && (
-          <p className="mt-4 text-sm text-red-500 bg-red-50 dark:bg-red-900/20 px-3 py-2 rounded-lg">
-            {error}
-          </p>
+          <div className="mt-4 text-sm text-red-500 bg-red-50 dark:bg-red-900/20 px-3 py-2 rounded-lg">
+            {Array.isArray(error) ? (
+              <ul className="list-disc list-inside">
+                {error.map((err, index) => (
+                  <li key={index}>{err.msg}</li>
+                ))}
+              </ul>
+            ) : (
+              error
+            )}
+          </div>
         )}
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">

@@ -6,7 +6,7 @@ import { ClickEvent } from "../models/events.model";
 export const postUrl = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { fullUrl } = req.body;
@@ -14,10 +14,13 @@ export const postUrl = async (
     try {
       new URL(fullUrl); // validates URL
     } catch {
-      return res.status(400).json({ msg: "Invalid URL format" });
+      return res.status(400).json({
+        success: false,
+        msg: "Invalid URL! ",
+      });
     }
 
-    //check if URL not already exists
+    //check if URL already exists
     const existingUrl = await Url.findOne({ fullUrl });
     if (existingUrl) {
       const shortUrl = `${req.protocol}://${req.get("host")}/${
@@ -26,14 +29,14 @@ export const postUrl = async (
 
       if (!req.user) {
         return res.json({
+          success: true,
           shortUrl,
-          fullUrl: existingUrl.fullUrl,
         });
       } else if (req.user.userId === existingUrl.owner?.toString()) {
         return res.json({
+          success: true,
           isAlreadyExist: true,
           shortUrl,
-          fullUrl: existingUrl.fullUrl,
         });
       }
     }
@@ -54,6 +57,7 @@ export const postUrl = async (
     const shortUrl = `${req.protocol}://${req.get("host")}/${shortID}`;
 
     res.status(201).json({
+      success: true,
       shortUrl,
     });
   } catch (error) {
@@ -64,7 +68,7 @@ export const postUrl = async (
 export const getUrl = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { shortID } = req.params;
@@ -93,7 +97,7 @@ export const getUrl = async (
 export const getAllUrls = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const userId = req.user?.userId;
@@ -110,7 +114,7 @@ export const getAllUrls = async (
 export const deleteUrl = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { shortID } = req.params;
