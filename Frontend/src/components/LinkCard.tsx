@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useUrlContext } from "../context/UrlContext";
 import { Link } from "react-router-dom";
 import { MdAnalytics } from "react-icons/md";
+import { toastInfo } from "../utils/toast";
 
 type LinkCardProps = {
   originalUrl: string;
@@ -20,6 +21,7 @@ export default function LinkCard({
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
+    toastInfo("Link copied 📋");
   };
 
   const getShortID = (shortUrl: string): string => {
@@ -72,9 +74,9 @@ export default function LinkCard({
         <a className="text-indigo-600 font-medium dark:text-blue-600">
           {shortUrl}
         </a>
-        <span className="text-sm text-gray-600 dark:text-gray-400">
+        {/* <span className="text-sm text-gray-600 dark:text-gray-400">
           {clicks} clicks
-        </span>
+        </span> */}
       </div>
 
       <div className="flex  justify-between">
@@ -85,7 +87,7 @@ export default function LinkCard({
               setCopied(true);
               setTimeout(() => {
                 setCopied(false);
-              },8000)
+              }, 8000);
             }}
             className="px-3 py-1 rounded-lg border bg-gray-600 text-white dark:text-gray-200"
           >
@@ -102,7 +104,7 @@ export default function LinkCard({
           to={`/dashboard/analytics/${getShortID(shortUrl)}`}
           className="dark:text-gray-200 border flex gap-2 items-center dark:border-gray-600 mt-1 rounded-2xl px-2 py-2"
         >
-          <MdAnalytics size={20}/>
+          <MdAnalytics size={20} />
           view Analytics
         </Link>
       </div>

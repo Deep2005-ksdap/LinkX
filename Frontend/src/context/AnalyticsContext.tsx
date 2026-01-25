@@ -14,6 +14,8 @@ interface AnalyticsProviderProps {
   children: ReactNode;
 }
 
+const API = import.meta.env.VITE_BACKEND_API;
+
 export function AnalyticsProvider({ children }: AnalyticsProviderProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +28,7 @@ export function AnalyticsProvider({ children }: AnalyticsProviderProps) {
       setError(null);
 
       const res = await axios.get(
-        `http://localhost:3000/analytics/${shortID}`,
+        `${API}/analytics/${shortID}`,
         { withCredentials: true },
       );
 
@@ -46,7 +48,7 @@ export function AnalyticsProvider({ children }: AnalyticsProviderProps) {
         setError(null);
 
         const res = await axios.get(
-          `http://localhost:3000/analytics/over-all`,
+          `${API}/analytics/over-all`,
           { withCredentials: true },
         );
 

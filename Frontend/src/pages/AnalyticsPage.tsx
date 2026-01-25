@@ -14,6 +14,7 @@ import { useAnalyticsContext } from "../context/AnalyticsContext";
 import type { OverallAnalyticsData } from "../types/analytics";
 
 const COLORS = ["#2563eb", "#16a34a", "#f59e0b", "#ef4444"];
+const API = import.meta.env.VITE_BACKEND_API;
 
 export default function OverallAnalytics() {
   const { getOverallAnalytics, loading, error } = useAnalyticsContext();
@@ -142,7 +143,7 @@ export default function OverallAnalytics() {
             {topLinks.map((link) => (
               <tr key={link.shortID} className="border-t dark:border-gray-700">
                 <td className="py-2 font-mono dark:text-white">
-                  http://localhost:3000/{link.shortID}
+                  {API}/{link.shortID}
                 </td>
                 <td className="dark:text-white">{link.clicks}</td>
                 <td className="dark:text-white">{link.lastClick}</td>

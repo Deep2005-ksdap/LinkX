@@ -3,6 +3,7 @@ import Features from "../components/Features";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { useUrlContext } from "../context/UrlContext";
+import { toastError, toastInfo } from "../utils/toast";
 
 type Theme = "light" | "dark";
 
@@ -16,10 +17,11 @@ export default function LandingPage({ theme, setTheme }: LandingPageProps) {
   const [url, setUrl] = useState<string>("");
   const [show, setShow] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
-  const { createShortUrl, loading } = useUrlContext();
+  const { createShortUrl, error, loading } = useUrlContext();
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
+    toastInfo("Link copied 📋");
     setCopied((prev) => !prev);
     setTimeout(() => {
       setCopied(false);
@@ -27,10 +29,20 @@ export default function LandingPage({ theme, setTheme }: LandingPageProps) {
   };
 
   const handleCreate = async () => {
-    const res = await createShortUrl(url as string);
-    setLink(res?.shortUrl as string);
-    setShow(true);
-    setUrl("");
+    if (!url.trim()) {
+      toastError("Please enter a valid URL to shorten");
+      return;
+    }
+    const data = await createShortUrl(url as string);
+
+    if (!data) {
+      setShow(false);
+      setUrl("");
+    } else {
+      setLink(data?.shortUrl as string);
+      setShow(true);
+      setUrl("");
+    }
   };
   return (
     <div className="min-h-screen flex flex-col   text-gray-900">

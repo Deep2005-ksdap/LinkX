@@ -3,7 +3,7 @@ import { useUrlContext } from "../context/UrlContext";
 import LinkCard from "./LinkCard";
 
 const LinkLists = () => {
-  const BASE_SHORT_URL = "http://localhost:3000";
+  const API = import.meta.env.VITE_BACKEND_API;
   const { urls, loading, getMyUrls, refreshFlag } = useUrlContext();
 
   useEffect(() => {
@@ -24,7 +24,7 @@ const LinkLists = () => {
           <LinkCard
             key={url.id}
             originalUrl={url.fullUrl}
-            shortUrl={`${BASE_SHORT_URL}/${url.shortID}`}
+            shortUrl={`${API}/${url.shortID}`}
             clicks={12}
           />
         ))

@@ -15,6 +15,8 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+const API = import.meta.env.VITE_BACKEND_API;
+
 export function AuthProvider({ children }: AuthProviderProps) {
   const navigate = useNavigate();
 
@@ -29,7 +31,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setLoading(true);
       setError(null);
       const res = await axios.post(
-        "http://localhost:3000/auth/login",
+        `${API}/auth/login`,
         { email, password },
         {
           withCredentials: true,
@@ -58,7 +60,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setLoading(true);
       setError(null);
 
-      const res = await axios.post("http://localhost:3000/auth/register", {
+      const res = await axios.post(`${API}/auth/register`, {
         fullname,
         email,
         password,
@@ -81,8 +83,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const logout = async () => {
     try {
       await axios.post(
-        "http://localhost:3000/auth/logout",
-        {},
+        `${API}/auth/logout`,
         { withCredentials: true },
       );
       setUser(null);
@@ -94,7 +95,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     const getMe = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/auth/me", {
+        const res = await axios.get(`${API}/auth/me`, {
           withCredentials: true,
         });
 

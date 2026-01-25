@@ -10,7 +10,7 @@ export default function Dashboard() {
 
   const handleCreate = async () => {
     const data = await createShortUrl(url as string);
-    console.log({ data });
+    
     if (data?.isAlreadyExist) {
       setLinkExist((prev) => !prev);
       setTimeout(() => {

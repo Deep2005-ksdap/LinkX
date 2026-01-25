@@ -20,19 +20,35 @@ export const postUrl = async (
       });
     }
 
+    // for guest users
+    if (!userId) {
+      let shortID;
+      let existingShortID;
+      do {
+        shortID = generateShortId();
+        existingShortID = await Url.findOne({ shortID });
+      } while (existingShortID);
+
+      await Url.create({
+        fullUrl,
+        shortID,
+        owner: userId,
+      });
+      const shortUrl = `${req.protocol}://${req.get("host")}/${shortID}`;
+
+      res.status(201).json({
+        success: true,
+        shortUrl,
+      });
+    }
+
     //check if URL already exists
     const existingUrl = await Url.findOne({ fullUrl });
     if (existingUrl) {
       const shortUrl = `${req.protocol}://${req.get("host")}/${
         existingUrl.shortID
       }`;
-
-      if (!req.user) {
-        return res.json({
-          success: true,
-          shortUrl,
-        });
-      } else if (req.user.userId === existingUrl.owner?.toString()) {
+      if (req?.user?.userId === existingUrl.owner?.toString()) {
         return res.json({
           success: true,
           isAlreadyExist: true,
