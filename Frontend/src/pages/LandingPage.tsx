@@ -17,7 +17,7 @@ export default function LandingPage({ theme, setTheme }: LandingPageProps) {
   const [url, setUrl] = useState<string>("");
   const [show, setShow] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
-  const { createShortUrl, error, loading } = useUrlContext();
+  const { createShortUrl, loading } = useUrlContext();
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);

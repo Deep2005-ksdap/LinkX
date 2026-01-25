@@ -12,64 +12,55 @@ export const postUrl = async (
     const { fullUrl } = req.body;
     const userId = req.user?.userId;
     try {
-      new URL(fullUrl); // validates URL
+      new URL(fullUrl);
     } catch {
       return res.status(400).json({
         success: false,
-        msg: "Invalid URL! ",
+        msg: "Invalid URL!",
       });
     }
 
-    // for guest users
+    // ✅ Guest users → always create new short URL
     if (!userId) {
       let shortID;
-      let existingShortID;
       do {
         shortID = generateShortId();
-        existingShortID = await Url.findOne({ shortID });
-      } while (existingShortID);
+      } while (await Url.findOne({ shortID }));
 
-      await Url.create({
-        fullUrl,
-        shortID,
-        owner: userId,
-      });
+      await Url.create({ fullUrl, shortID });
+
       const shortUrl = `${req.protocol}://${req.get("host")}/${shortID}`;
 
-      res.status(201).json({
+      return res.status(201).json({
         success: true,
         shortUrl,
       });
     }
 
-    //check if URL already exists
-    const existingUrl = await Url.findOne({ fullUrl });
+    // ✅ Logged-in users → check existing URL only for that user
+    const existingUrl = await Url.findOne({ fullUrl, owner: userId });
+
     if (existingUrl) {
-      const shortUrl = `${req.protocol}://${req.get("host")}/${
-        existingUrl.shortID
-      }`;
-      if (req?.user?.userId === existingUrl.owner?.toString()) {
-        return res.json({
-          success: true,
-          isAlreadyExist: true,
-          shortUrl,
-        });
-      }
+      const shortUrl = `${req.protocol}://${req.get("host")}/${existingUrl.shortID}`;
+      return res.json({
+        success: true,
+        isAlreadyExist: true,
+        shortUrl,
+      });
     }
 
-    //uniqueness of shortID
+    // ✅ Create new short URL
     let shortID;
-    let existingShortID;
     do {
       shortID = generateShortId();
-      existingShortID = await Url.findOne({ shortID });
-    } while (existingShortID);
+    } while (await Url.findOne({ shortID }));
 
     await Url.create({
       fullUrl,
       shortID,
       owner: userId,
     });
+
     const shortUrl = `${req.protocol}://${req.get("host")}/${shortID}`;
 
     res.status(201).json({
