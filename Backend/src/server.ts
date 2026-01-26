@@ -30,6 +30,9 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(cookieParser());
 
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok", time: new Date() });
+});
 app.use(urlRouter);
 app.use(authRouter);
 app.use(analyticRouter);
