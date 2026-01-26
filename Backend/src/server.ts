@@ -4,6 +4,7 @@ dotenv.config();
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import mongoose from "mongoose";
 import { connectDb } from "./config/db";
 import { urlRouter } from "./routes/url.route";
 import { errorHandler } from "./middleware/error.middleware";
@@ -24,15 +25,17 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// app.get("/", (req: Request, res: Response) => {
-//   res.send("hi! it is ur url encoder");
-// });
-
 app.use(cookieParser());
 
-app.get("/health", (req, res) => {
-  res.status(200).json({ status: "ok", time: new Date() });
+app.get("/health", async (req, res) => {
+  try {
+    await mongoose.connection.db?.admin().ping();
+    res.status(200).json({ status: "ok", db: "connected" });
+  } catch (err) {
+    res.status(500).json({ status: "error", db: "disconnected" });
+  }
 });
+
 app.use(urlRouter);
 app.use(authRouter);
 app.use(analyticRouter);
