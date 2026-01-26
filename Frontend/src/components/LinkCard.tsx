@@ -8,14 +8,9 @@ import { toastInfo } from "../utils/toast";
 type LinkCardProps = {
   originalUrl: string;
   shortUrl: string;
-  clicks: number;
 };
 
-export default function LinkCard({
-  originalUrl,
-  shortUrl,
-  clicks,
-}: LinkCardProps) {
+export default function LinkCard({ originalUrl, shortUrl }: LinkCardProps) {
   const [copied, setCopied] = useState<boolean>(false);
   const [deleteRemind, setDeleteRemind] = useState<boolean>(false);
   const { deleteUrl } = useUrlContext();
@@ -83,9 +78,6 @@ export default function LinkCard({
             >
               {shortUrl}
             </a>
-            <div className="text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">
-              {clicks} clicks
-            </div>
           </div>
 
           <div className="flex justify-between items-center">

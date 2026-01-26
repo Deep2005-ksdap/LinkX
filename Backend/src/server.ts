@@ -9,15 +9,17 @@ import { urlRouter } from "./routes/url.route";
 import { errorHandler } from "./middleware/error.middleware";
 import { analyticRouter } from "./routes/analytics.route";
 import { authRouter } from "./routes/auth.route";
+// cron job
+import "./cron/linkCleanup.cron";
 
 const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // Vite default
+    origin: process.env.FRONTEND_API || "http://localhost:5174",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
-  })
+  }),
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

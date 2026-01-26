@@ -36,7 +36,6 @@ const LinkLists = () => {
               key={url.id}
               originalUrl={url.fullUrl}
               shortUrl={`${API}/${url.shortID}`}
-              clicks={12}
             />
           ))}
         </div>

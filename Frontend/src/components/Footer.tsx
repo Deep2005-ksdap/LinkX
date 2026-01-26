@@ -18,7 +18,7 @@ export default function Footer() {
             Terms
           </a>
           <a
-            href="#"
+            href="mailto:deepdev039@gmail.com"
             className="hover:text-gray-900 dark:hover:text-white transition-colors duration-300"
           >
             Contact
