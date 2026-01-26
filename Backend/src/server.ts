@@ -27,13 +27,12 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(cookieParser());
 
-app.get("/health", async (req, res) => {
-  try {
-    await mongoose.connection.db?.admin().ping();
-    res.status(200).json({ status: "ok", db: "connected" });
-  } catch (err) {
-    res.status(500).json({ status: "error", db: "disconnected" });
-  }
+app.get("/health", (req, res) => {
+  const dbStatus =
+    mongoose.connection.readyState === 1 ? "connected" : "disconnected";
+  res
+    .status(dbStatus === "connected" ? 200 : 500)
+    .json({ status: "ok", db: dbStatus });
 });
 
 app.use(urlRouter);
