@@ -34,10 +34,10 @@ export default function Sidebar({ theme, setTheme }: SidebarProps) {
   return (
     <>
       {/* Mobile Top Bar */}
-      <div className="md:hidden flex items-center justify-between px-4 py-3 border-b dark:border-gray-800">
+      <div className="md:hidden flex items-center justify-between px-4 py-3 border-b dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm">
         <h1 className="text-lg font-semibold dark:text-white">LinkX</h1>
         <button
-          className="dark:text-gray-200"
+          className="dark:text-gray-200 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           onClick={() => setIsMobileOpen(true)}
         >
           <IoMenu size={24} />
@@ -59,15 +59,19 @@ export default function Sidebar({ theme, setTheme }: SidebarProps) {
           h-screen w-64
           bg-white dark:bg-gray-900
           border-r dark:border-gray-800
+          shadow-xl
           transform transition-transform duration-300
           ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
           md:translate-x-0
         `}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b dark:text-gray-10000">
+        <div className="flex items-center justify-between px-5 py-4 border-b dark:border-gray-800 bg-linear-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-900">
           <h2 className="text-xl font-semibold dark:text-white">LinkX</h2>
-          <button className="md:hidden" onClick={() => setIsMobileOpen(false)}>
+          <button
+            className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            onClick={() => setIsMobileOpen(false)}
+          >
             <IoClose className="dark:text-white" size={22} />
           </button>
         </div>
@@ -78,11 +82,11 @@ export default function Sidebar({ theme, setTheme }: SidebarProps) {
             to="/dashboard"
             className={() => {
               const isActive = location.pathname.endsWith("/dashboard");
-              return `flex items-center gap-3 px-3 py-2 rounded-lg text-sm
+              return `flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-all duration-200
                ${
                  isActive
-                   ? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
-                   : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                   ? "bg-blue-100 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100 shadow-md"
+                   : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:shadow-sm"
                }`;
             }}
           >
@@ -95,11 +99,11 @@ export default function Sidebar({ theme, setTheme }: SidebarProps) {
               const isActive = location.pathname.startsWith(
                 "/dashboard/analytics",
               );
-              return `flex items-center gap-3 px-3 py-2 rounded-lg text-sm
+              return `flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-all duration-200
                ${
                  isActive
-                   ? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
-                   : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                   ? "bg-blue-100 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100 shadow-md"
+                   : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:shadow-sm"
                }`;
             }}
           >
@@ -117,9 +121,9 @@ export default function Sidebar({ theme, setTheme }: SidebarProps) {
           {/* Account Button */}
           <button
             onClick={() => setIsAccountOpen(!isAccountOpen)}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg
+            className="w-full flex items-center gap-3 px-3 py-3 rounded-lg
                        text-sm text-gray-600 dark:text-gray-400
-                       hover:bg-gray-100 dark:hover:bg-gray-800"
+                       hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
           >
             <CgProfile size={18} />
             Account
@@ -127,7 +131,7 @@ export default function Sidebar({ theme, setTheme }: SidebarProps) {
 
           {/* Account Popup */}
           {isAccountOpen && (
-            <div className="mt-2 rounded-lg border border-gray-400 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 p-3 text-sm">
+            <div className="mt-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 text-sm shadow-lg">
               <p className="font-medium text-gray-900 dark:text-white">
                 {user?.fullname.firstname}
               </p>
@@ -137,13 +141,13 @@ export default function Sidebar({ theme, setTheme }: SidebarProps) {
               <div className="flex px-2 mt-4 justify-between">
                 <button
                   onClick={toggleTheme}
-                  className="px-3 py-2 text-sm rounded-lg border dark:text-white dark:border-gray-700"
+                  className="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   {theme === "light" ? <FaMoon /> : <IoSunnyOutline />}
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="mt-3 flex font-bold items-center gap-1 text-red-500 hover:text-red-600"
+                  className="flex font-bold items-center gap-1 text-red-500 hover:text-red-600 transition-colors"
                 >
                   <IoLogOut />
                   Logout

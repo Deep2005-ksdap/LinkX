@@ -37,8 +37,10 @@ export default function OverallAnalytics() {
   if (loading && !data) {
     return (
       <div className="p-6 h-screen w-full flex flex-col gap-4 items-center justify-center">
-        <div className="h-6 w-6 animate-spin rounded-full dark:border-b-white border-2 border-t-transparent" />
-        <div className="text-xl dark:text-white">Loading analytics...</div>
+        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="text-xl dark:text-white font-medium">
+          Loading analytics...
+        </div>
       </div>
     );
   }
@@ -46,7 +48,9 @@ export default function OverallAnalytics() {
   if (error && !data) {
     return (
       <div className="p-6 h-screen w-full flex items-center justify-center">
-        <div className="text-xl text-red-500">Error: {error}</div>
+        <div className="text-xl text-red-500 bg-red-50 dark:bg-red-900/20 px-6 py-4 rounded-lg border border-red-200 dark:border-red-800">
+          Error: {error}
+        </div>
       </div>
     );
   }
@@ -85,10 +89,12 @@ export default function OverallAnalytics() {
   return (
     <div className="p-6 h-screen w-full overflow-y-auto space-y-8 dark:text-white">
       {/* Heading */}
-      <h1 className="text-2xl font-semibold">Overall Analytics</h1>
+      <h1 className="text-3xl font-bold bg-linear-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+        Overall Analytics
+      </h1>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <StatCard title="Total Links" value={summary.totalLinks} />
         <StatCard title="Total Clicks" value={summary.totalClicks} />
         <StatCard title="Today Clicks" value={summary.todayClicks} />
@@ -98,24 +104,43 @@ export default function OverallAnalytics() {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Clicks Over Time */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-4">
-          <h2 className="font-medium mb-3 dark:text-white">Clicks Over Time</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+          <h2 className="font-semibold mb-4 dark:text-white text-lg">
+            Clicks Over Time
+          </h2>
           <ResponsiveContainer width="100%" height={250}>
             <LineChart data={clicksOverTime}>
               <XAxis dataKey="date" />
               <YAxis />
               <Tooltip />
-              <Line type="monotone" dataKey="clicks" strokeWidth={2} />
+              <Line
+                type="monotone"
+                dataKey="clicks"
+                stroke="#2563eb"
+                strokeWidth={3}
+                dot={{ fill: "#2563eb", strokeWidth: 2, r: 4 }}
+                activeDot={{ r: 6, stroke: "#2563eb", strokeWidth: 2 }}
+              />
             </LineChart>
           </ResponsiveContainer>
         </div>
 
         {/* Referrer Breakdown */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-4">
-          <h2 className="font-medium mb-3 dark:text-white">Traffic Sources</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+          <h2 className="font-semibold mb-4 dark:text-white text-lg">
+            Traffic Sources
+          </h2>
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
-              <Pie data={referrerData} dataKey="value" nameKey="name">
+              <Pie
+                data={referrerData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={80}
+                fill="#8884d8"
+              >
                 {referrerData.map((_, i) => (
                   <Cell key={i} fill={COLORS[i % COLORS.length]} />
                 ))}
@@ -127,30 +152,39 @@ export default function OverallAnalytics() {
       </div>
 
       {/* Top Links Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-4">
-        <h2 className="font-medium mb-3 dark:text-white">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+        <h2 className="font-semibold mb-6 dark:text-white text-lg">
           Top Performing Links
         </h2>
-        <table className="w-full text-left">
-          <thead className="text-gray-500 dark:text-gray-400 text-sm">
-            <tr>
-              <th className="py-2">Short URL</th>
-              <th>Total Clicks</th>
-              <th>Last Click</th>
-            </tr>
-          </thead>
-          <tbody>
-            {topLinks.map((link) => (
-              <tr key={link.shortID} className="border-t dark:border-gray-700">
-                <td className="py-2 font-mono dark:text-white">
-                  {API}/{link.shortID}
-                </td>
-                <td className="dark:text-white">{link.clicks}</td>
-                <td className="dark:text-white">{link.lastClick}</td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead className="text-gray-500 dark:text-gray-400 text-sm border-b border-gray-200 dark:border-gray-700">
+              <tr>
+                <th className="py-3 px-2">Short URL</th>
+                <th className="py-3 px-2">Total Clicks</th>
+                <th className="py-3 px-2">Last Click</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {topLinks.map((link) => (
+                <tr
+                  key={link.shortID}
+                  className="border-t dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                >
+                  <td className="py-3 px-2 font-mono dark:text-white text-sm">
+                    {API}/{link.shortID}
+                  </td>
+                  <td className="py-3 px-2 dark:text-white font-medium">
+                    {link.clicks}
+                  </td>
+                  <td className="py-3 px-2 dark:text-white text-sm">
+                    {link.lastClick}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
@@ -158,9 +192,13 @@ export default function OverallAnalytics() {
 
 function StatCard({ title, value }: { title: string; value: number }) {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-4">
-      <p className="text-gray-500 dark:text-gray-400 text-sm">{title}</p>
-      <p className="text-2xl font-semibold dark:text-white">{value}</p>
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300">
+      <p className="text-gray-500 dark:text-gray-400 text-sm font-medium mb-2">
+        {title}
+      </p>
+      <p className="text-3xl font-bold dark:text-white bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+        {value.toLocaleString()}
+      </p>
     </div>
   );
 }

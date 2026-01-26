@@ -150,7 +150,7 @@ export default function LandingPage({ theme, setTheme }: LandingPageProps) {
                     />
                     <motion.button
                       onClick={() => copyToClipboard(link)}
-                      className="mt-3 px-6 py-2 rounded-lg bg-gradient-to-r from-green-500 to-blue-500 text-white font-medium shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-2 w-full justify-center"
+                      className="mt-3 px-6 py-2 rounded-lg bg-linear-to-r from-green-500 to-blue-500 text-white font-medium shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-2 w-full justify-center"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >

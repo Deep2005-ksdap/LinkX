@@ -84,15 +84,21 @@ export const loginUser = async (
 
     res.cookie("token", token, {
       httpOnly: true, //prevent from xss attack
-      secure: true, // only on HTTPS
-      sameSite: "none", // needed for cross-site cookies
+      secure: false, // true for only on HTTPS
+      sameSite: "lax", // changed from "none" to "lax" for development compatibility
       maxAge: 1000 * 60 * 60 * 24, // 1 day
     });
 
     return res.status(200).json({
       success: true,
       message: "Login successful",
-      user,
+      user: {
+        _id: user._id,
+        fullname: user.fullname,
+        email: user.email,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      },
     });
   } catch (error) {
     next(error);
@@ -100,7 +106,12 @@ export const loginUser = async (
 };
 
 export const logout = async (req: Request, res: Response) => {
-  res.clearCookie("token");
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+  });
+
   return res.status(200).json({
     message: "Logout successful",
   });

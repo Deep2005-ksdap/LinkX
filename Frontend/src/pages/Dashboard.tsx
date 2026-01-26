@@ -1,6 +1,7 @@
 import LinkLists from "../components/LinkLists";
 import { useUrlContext } from "../context/UrlContext";
 import { useState } from "react";
+import { FaLink } from "react-icons/fa";
 
 export default function Dashboard() {
   const [url, setUrl] = useState<string>("");
@@ -10,7 +11,7 @@ export default function Dashboard() {
 
   const handleCreate = async () => {
     const data = await createShortUrl(url as string);
-    
+
     if (data?.isAlreadyExist) {
       setLinkExist((prev) => !prev);
       setTimeout(() => {
@@ -34,32 +35,40 @@ export default function Dashboard() {
       </h1>
       <main className="flex-1 py-2 px-6 sm:p-6 overflow-y-auto max-h-screen">
         {/* Shorten box */}
-        <div className="p-2 border rounded-xl bg-white dark:bg-gray-800 dark:border-gray-700">
-          <h2 className="font-medium dark:text-gray-200">Shorten a new link</h2>
-          <div className="mt-3 flex flex-col sm:flex-row gap-3">
+        <div className="p-6 border rounded-xl bg-white dark:bg-gray-800 dark:border-gray-700 shadow-lg">
+          <h2 className="font-medium dark:text-gray-200 text-lg">
+            Shorten a new link
+          </h2>
+          <div className="mt-4 flex flex-col sm:flex-row gap-3">
             <input
               type="text"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder="Paste your long URL here"
-              className="flex-1 px-4 py-2 rounded-lg dark:text-white border bg-transparent focus:outline-none focus:ring-2 focus:placeholder-gray-900 dark:focus:ring-gray-400 dark:placeholder-gray-400"
+              className="flex-1 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
             />
-            {linkExist && (
-              <p className="text-center rounded-xl font-bold mt-2 py-2 text-white bg-red-800/80">
-                Link is Already Exist
-              </p>
-            )}
-
             <button
               disabled={url === ""}
               onClick={handleCreate}
-              className={`px-5 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 disabled:text-white/50 disabled:bg-blue-600/50 disabled:cursor-not-allowed ${loading ? "cursor-progress" : "cursor-pointer"}`}
+              className={`px-6 py-3 rounded-lg bg-linear-to-r from-blue-600 to-purple-600 text-white font-medium shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${loading ? "cursor-progress" : "cursor-pointer"}`}
             >
-              Shorten
+              {!loading ? (
+                <>
+                  <FaLink className="text-sm" />
+                  Shorten
+                </>
+              ) : (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              )}
             </button>
           </div>
+          {linkExist && (
+            <p className="text-center rounded-xl font-bold mt-4 py-3 text-white bg-linear-to-r from-red-500 to-red-600 shadow-md">
+              Link Already Exists
+            </p>
+          )}
           {error && (
-            <p className="text-center rounded-xl font-bold mt-2 py-2 text-red-500 bg-red-400/40">
+            <p className="text-center rounded-xl font-bold mt-4 py-3 text-red-100 bg-linear-to-r from-red-500 to-red-600 shadow-md">
               {error}
             </p>
           )}

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { useUrlContext } from "../context/UrlContext";
 import { Link } from "react-router-dom";
 import { MdAnalytics } from "react-icons/md";
@@ -36,20 +35,10 @@ export default function LinkCard({
   };
 
   return (
-    <AnimatePresence>
+    <>
       {deleteRemind ? (
-        <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          <motion.div
-            className="w-full max-w-sm rounded-lg bg-white dark:bg-gray-800 p-6 shadow-lg"
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
-          >
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="w-full max-w-sm rounded-lg bg-white dark:bg-gray-800 p-6 shadow-lg">
             <h2 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
               Delete link?
             </h2>
@@ -60,50 +49,48 @@ export default function LinkCard({
             </p>
 
             <div className="flex justify-end gap-3">
-              <motion.button
+              <button
                 className="rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-300"
                 onClick={() => setDeleteRemind(false)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
               >
                 Cancel
-              </motion.button>
+              </button>
 
-              <motion.button
+              <button
                 className="rounded-md bg-red-600 px-4 py-2 text-sm text-white hover:bg-red-700 transition-colors duration-300"
                 onClick={() => {
                   handleDelete();
                   setDeleteRemind(false);
                 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
               >
                 Delete
-              </motion.button>
+              </button>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       ) : (
-        <motion.div
-          className="border rounded-xl p-4 bg-white dark:bg-gray-800 dark:border-gray-500 shadow-sm hover:shadow-lg transition-shadow duration-300"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          whileHover={{ y: -2 }}
-        >
-          <p className="text-sm text-gray-500 truncate dark:text-gray-400">
+        <div className="border rounded-xl p-6 bg-white dark:bg-gray-800 dark:border-gray-700 shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <p className="text-sm text-gray-500 truncate dark:text-gray-400 mb-2">
             {originalUrl}
           </p>
 
-          <div className="mt-2 flex items-center justify-between">
-            <a className="text-blue-600 font-medium dark:text-blue-400 hover:underline">
+          <div className="flex items-center justify-between mb-4">
+            <a
+              href={shortUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 font-semibold dark:text-blue-400 hover:underline text-lg"
+            >
               {shortUrl}
             </a>
+            <div className="text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">
+              {clicks} clicks
+            </div>
           </div>
 
-          <div className="flex justify-between">
-            <div className="mt-3 flex gap-3 text-sm">
-              <motion.button
+          <div className="flex justify-between items-center">
+            <div className="flex gap-3">
+              <button
                 onClick={() => {
                   copyToClipboard(shortUrl);
                   setCopied(true);
@@ -111,35 +98,29 @@ export default function LinkCard({
                     setCopied(false);
                   }, 8000);
                 }}
-                className="px-3 py-1 rounded-lg border bg-gray-600 text-white dark:text-gray-200 hover:bg-gray-700 transition-colors duration-300 flex items-center gap-1"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                className="px-4 py-2 rounded-lg bg-linear-to-r from-green-500 to-blue-500 text-white font-medium shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-2"
               >
                 {copied ? <FaCheck /> : <FaCopy />}
-                {copied ? "Copied" : "Copy"}
-              </motion.button>
-              <motion.button
+                {copied ? "Copied!" : "Copy"}
+              </button>
+              <button
                 onClick={() => setDeleteRemind((prev) => !prev)}
-                className="px-3 py-1 rounded-lg border text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-300 flex items-center gap-1"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                className="px-4 py-2 rounded-lg border border-red-300 text-red-600 dark:border-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-300 flex items-center gap-2"
               >
                 <FaTrash />
                 Delete
-              </motion.button>
+              </button>
             </div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link
-                to={`/dashboard/analytics/${getShortID(shortUrl)}`}
-                className="dark:text-gray-200 border flex gap-2 items-center dark:border-gray-600 mt-1 rounded-2xl px-2 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-300"
-              >
-                <MdAnalytics size={20} />
-                View Analytics
-              </Link>
-            </motion.div>
+            <Link
+              to={`/dashboard/analytics/${getShortID(shortUrl)}`}
+              className="bg-linear-to-r from-purple-500 to-pink-500 text-white font-medium flex gap-2 items-center rounded-lg px-4 py-2 hover:shadow-lg transition-all duration-300"
+            >
+              <MdAnalytics size={18} />
+              Analytics
+            </Link>
           </div>
-        </motion.div>
+        </div>
       )}
-    </AnimatePresence>
+    </>
   );
 }

@@ -11,23 +11,35 @@ const LinkLists = () => {
   }, [refreshFlag]);
 
   return (
-    <div className="mt-8 space-y-4">
+    <div className="mt-8 space-y-6">
       {loading ? (
-        <div className="flex items-center flex-col gap-2 py-10 dark:text-white font-semibold">
-          <div className="h-6 w-6 animate-spin rounded-full dark:border-b-white border-2 border-t-transparent" />
-          <p>Wait while Loading....</p>
+        <div className="flex flex-col items-center justify-center gap-4 py-16">
+          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-gray-600 dark:text-gray-400 font-medium">
+            Loading your links...
+          </p>
         </div>
       ) : urls.length === 0 ? (
-        <p className="text-center text-gray-500">No links created yet</p>
+        <div className="text-center py-16">
+          <div className="text-6xl mb-4">🔗</div>
+          <p className="text-gray-500 dark:text-gray-400 text-lg font-medium">
+            No links created yet
+          </p>
+          <p className="text-gray-400 dark:text-gray-500 text-sm mt-2">
+            Start by shortening your first URL above!
+          </p>
+        </div>
       ) : (
-        urls?.map((url) => (
-          <LinkCard
-            key={url.id}
-            originalUrl={url.fullUrl}
-            shortUrl={`${API}/${url.shortID}`}
-            clicks={12}
-          />
-        ))
+        <div className="space-y-6">
+          {urls?.map((url) => (
+            <LinkCard
+              key={url.id}
+              originalUrl={url.fullUrl}
+              shortUrl={`${API}/${url.shortID}`}
+              clicks={12}
+            />
+          ))}
+        </div>
       )}
     </div>
   );
