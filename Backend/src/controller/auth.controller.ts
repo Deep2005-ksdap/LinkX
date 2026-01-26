@@ -82,10 +82,11 @@ export const loginUser = async (
 
     const token = assingJWT(user._id.toString()); // id need to be in string
 
+    const isProd = process.env.NODE_ENV === "production";
     res.cookie("token", token, {
       httpOnly: true, //prevent from xss attack
-      secure: false, // true for only on HTTPS
-      sameSite: "lax", // changed from "none" to "lax" for development compatibility
+      secure: isProd, // true for only on HTTPS
+      sameSite: isProd ? "none" : "lax", // changed from "none" to "lax" for development compatibility
       maxAge: 1000 * 60 * 60 * 24, // 1 day
     });
 
@@ -106,10 +107,11 @@ export const loginUser = async (
 };
 
 export const logout = async (req: Request, res: Response) => {
+  const isProd = process.env.NODE_ENV === "production";
   res.clearCookie("token", {
     httpOnly: true,
-    secure: false,
-    sameSite: "lax",
+    secure: isProd,
+    sameSite: isProd ? "none" : "lax",
   });
 
   return res.status(200).json({
